@@ -18,3 +18,5 @@
 
 HTML原型关口：路径/版本/hash、实际预览证据、用户确认范围/原话/日期；未确认则业务开发待开始。
 数据演进关口：SCHEMA变化矩阵、领域/流程/读模型边界、兼容与迁移未决项。
+
+**G1+G2 签认记录（2026-10-25）**：确认人 samqin123（用户，会话原话"确认"——三轮评审返工全部收口后整体签认）。范围：① SPEC/SCENARIOS/PATIENT-FLOW/DIFF-MATRIX/INTERACTION-DESIGN v1.1（10 线 30 页签；4 个 G1 决策点按 family-landscape 草案）② 品牌占位「小膜宝 EndoPal」+ 藕荷 #8A5B7B ③ 双主体/全病程/MinerU ④ 二期边界。G2：prototypes/v0.2（评审修订后版，P0×2 + 三轮返工留痕：9513fdd）；签认版本冻结于该提交。评审记录见 DESIGN-REVIEW.md（初审 + 复审1 + 复审2）。
