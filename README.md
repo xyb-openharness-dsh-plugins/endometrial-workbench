@@ -38,12 +38,22 @@ MMR / p53 / POLE 各自独立：检出、未检出、**未检测**三态并列�
 
 ## 怎么用
 
+### 开发版（本机，真数据源）
+```bash
+npm start -- --workspace ~/Documents/EndoPalWorkspace   # http://127.0.0.1:4173/
+npm run check                                            # 版本/语法/冻结/文案/列/单测/包/分期一致性
+npm run probe:headless                                   # 64 页签 × 2 档案（API 数据源）
+npm run check:hvt && npm run probe:resp                  # HVT X1–X4 / 窄宽 90 视图
+```
+资料只写在你选的目录（`xyb-endometrial.sqlite`，32 表），不会在包里或临时目录留文件。库里已有档案时不重复播种。
+
+### 原型（视觉基准）
 1. 双击打开 `prototypes/v0.2/index.html`（无需构建、无需联网；全部为演示数据）。
 2. 左侧 10 条一级线、页内 30 个二级页签；看板 13 枚场景 chip 可直达。
 3. 右上「AI 对话」可展开/收起；每页「AI 协助」会把提示词 + 本页病情上下文填入会话草稿（`endo:agent-draft`），**不会自动发送**。
 4. 档案可在左上角切换：周慧敏（52 女，术后放疗后随访）/ 李思（31 女，保育治疗中）。
 
-接入 DSH Desktop 时：安装本地 tgz（`npm pack` 后按 Desktop 帮助安装）或在 profile 中 `pnpm add`；首次先新建会话。原型阶段不读写真实文件、不调用模型。
+接入 DSH Desktop：`npm pack` 后在 Desktop 安装本地 tgz（profile 的 `dsh.profile.bundles` 加上包名），**重启宿主**后生效；首次先在左侧新建会话。装机实测属 M6，本轮未做，不写"装机通过"。
 
 ## 数据与口径
 
@@ -68,6 +78,6 @@ npm run shots:readme    # 重新生成 docs/screenshots/ 的 6 张 README 截图
 npm run check && npm test && npm run audit
 ```
 
-当前自验数字：64 页签 / 64 截图（`docs/shots/`）、HVT X1 30/30 无孤儿、X2 26 条路径、X3 32 视图（编辑 ≤1、表单 ≤6）、X4 AI 闭环 1111 + `endo:agent-draft`；`probe:resp` 90 视图溢出 0 / 竖排单字 0 / 裁切 0；禁词 0；computed `fill:none`。
+当前自验数字：原型 64 页签 / 64 截图（`docs/shots/`）、HVT X1 30/30 无孤儿、X2 26 条路径、X3 32 视图（编辑 ≤1、表单 ≤6）、X4 AI 闭环 1111 + `endo:agent-draft`；`probe:resp` 90 视图溢出 0 / 竖排单字 0 / 裁切 0；禁词 0；computed `fill:none`。开发版（API 数据源）无头 64/64 页签、溢出 0、console error 0、4xx 0、AI 35/45/25；`npm run check` 37 项单测 + 37/37 家族 audit + 分期一致性；`npm run check:pack` 占位 0 / 四要素齐；`probe:install`（仓库副本）30/30。
 
 文档索引：需求与 K1–K6 见 `docs/DEV-REQUIREMENTS-2026-10-25.md`；页面树权威见 `research-notes/family-landscape.md` §6.1–§6.3；交互与 CRUD 见 `docs/INTERACTION-DESIGN.md`；场景与流程见 `docs/SCENARIOS.md` / `docs/PATIENT-FLOW.md`；窄宽见 `docs/RESPONSIVE-RULES.md`；折叠卡与 README 截图见 `docs/32-TREATMENT-PATHWAY-FOLDOUT.md` / `docs/33-README-SCREENSHOTS.md`。

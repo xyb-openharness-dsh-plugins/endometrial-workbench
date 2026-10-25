@@ -11,8 +11,9 @@
    - 分类指标必须 categorical:true，且不参与 y 轴归一化；
    - 治疗线 pathway 的 detail 五块固定顺序：regimen/metrics/imaging/ae/support；
    - 私密记录统一 `visibility:'private'`，一图秀 / 摘要 / 导出三处过滤（三出口）。 */
-import { writeFileSync, mkdirSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { writeFileSync, mkdirSync, rmSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
+import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
@@ -873,24 +874,45 @@ const CATALOG = {
   FOLLOWUP_EVENT: { key: 'FOLLOWUP_EVENT', name: '随访节点', unit: '', cat: '分类节点', color: '#55707E', dec: 0, categorical: true, note: '随访节点只画点不连线。' }
 };
 
-const DATA = {
-  meta: {
-    dataStart: WINDOW_START, today: TODAY, windowStart: WINDOW_START, windowEnd: TODAY,
-    disclaimer: DISCLAIMER, sourceNote: SOURCE_NOTE, trialNote: TRIAL_NOTE,
-    version: '0.2.0', brand: '小膜宝 EndoPal', disease: 'endometrial'
-  },
-  catalog: CATALOG,
-  profiles: [A, B],
-  trials: TRIALS
-};
+/** 纯数据：被 dsh/demo.js import 时只返回这份对象，不碰磁盘（唯一数据源契约）。 */
+export function buildDemoProfiles() {
+  return {
+    meta: {
+      dataStart: WINDOW_START, today: TODAY, windowStart: WINDOW_START, windowEnd: TODAY,
+      disclaimer: DISCLAIMER, sourceNote: SOURCE_NOTE, trialNote: TRIAL_NOTE,
+      version: '0.2.0', brand: '小膜宝 EndoPal', disease: 'endometrial'
+    },
+    catalog: CATALOG,
+    profiles: [A, B],
+    trials: TRIALS
+  };
+}
 
-/* ---------- 产出 ---------- */
-mkdirSync(P2, { recursive: true });
-mkdirSync(join(ROOT, 'demo'), { recursive: true });
-writeFileSync(join(P2, 'demo-data.js'), '/* 由 demo/build-demo-data.mjs 生成；勿手改，改数据请改生成器后重新运行。 */\nwindow.DEMO_DATA = ' + JSON.stringify(DATA, null, 2) + ';\n');
-writeFileSync(join(ROOT, 'demo', 'demo-data.json'), JSON.stringify(DATA, null, 2) + '\n');
+/* ---------- 产出（仅直接运行时写盘） ---------- */
+const isMain = process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1]);
+if (isMain) {
+  const DATA = buildDemoProfiles();
+  mkdirSync(P2, { recursive: true });
+  mkdirSync(join(ROOT, 'demo'), { recursive: true });
+  writeFileSync(join(P2, 'demo-data.js'), '/* 由 demo/build-demo-data.mjs 生成；勿手改，改数据请改生成器后重新运行。 */\nwindow.DEMO_DATA = ' + JSON.stringify(DATA, null, 2) + ';\n');
+  writeFileSync(join(ROOT, 'demo', 'demo-data.json'), JSON.stringify(DATA, null, 2) + '\n');
 
-const nPath = DATA.profiles.reduce((a, p) => a + p.treatment.pathway.length, 0);
-const nBleed = DATA.profiles.reduce((a, p) => a + p.bleeding.rows.length, 0);
-const nPoints = DATA.profiles.reduce((a, p) => a + Object.values(p.metrics.numeric).reduce((b, s) => b + s.length, 0), 0);
-console.log(`demo-data.js + demo-data.json 生成完毕：2 档案 / 6 个月 / ${nPath} 个治疗阶段 / ${nBleed} 条出血记录 / ${nPoints} 个数值点 / ${TRIALS.length} 条试验线索`);
+  /* 同源落库：以子进程方式跑 seed-demo-sqlite.mjs（避免 TLA 循环，见该文件头注释）。 */
+  const sqlite = join(ROOT, 'demo', 'demo-data.sqlite');
+  rmSync(sqlite, { force: true }); // 幂等重跑：每次从空库建，避免 0001 重复执行
+  const seeded = spawnSync(process.execPath, [join(ROOT, 'demo', 'seed-demo-sqlite.mjs'), sqlite], { cwd: ROOT, encoding: 'utf8' });
+  if (seeded.status !== 0) {
+    console.error(seeded.stdout || '');
+    console.error(seeded.stderr || '');
+    throw new Error(`seed-demo-sqlite 失败（退出码 ${seeded.status}）`);
+  }
+  if (seeded.stdout.trim()) console.log(seeded.stdout.trim());
+
+  const nPath = DATA.profiles.reduce((a, p) => a + p.treatment.pathway.length, 0);
+  const nBleed = DATA.profiles.reduce((a, p) => a + p.bleeding.rows.length, 0);
+  const nPoints = DATA.profiles.reduce((a, p) => a + Object.values(p.metrics.numeric).reduce((b, s) => b + s.length, 0), 0);
+  console.log(`demo-data.js + demo-data.json 生成完毕：2 档案 / 6 个月 / ${nPath} 个治疗阶段 / ${nBleed} 条出血记录 / ${nPoints} 个数值点 / ${TRIALS.length} 条试验线索`);
+}
+
+
+
