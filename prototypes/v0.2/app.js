@@ -789,6 +789,32 @@ function pageFuImaging() {
   <div class="section-title"><div><h2>阴道细胞学</h2><p>记录但标「非常规」。</p></div></div>
   ${f.cytology.length ? `<div class="card">${f.cytology.map((x) => `<div class="kv-list"><div class="kv"><span>${esc(x.d)}</span><b>${esc(x.result)}</b></div><div class="kv"><span>原因 / 口径</span><b>${esc(x.reason)}</b></div></div><p class="small-note" style="margin-top:6px">${esc(x.note)}</p>`).join('')}</div>` : `<div class="empty"><h3>本档案没有细胞学记录</h3><p>没有症状时常规做，证据并不支持；具体听医生。</p></div>`}`;
 }
+function pageFuLabs() {
+  const p = profile();
+  const m = p.followup;
+  const rows = [
+    ['血压', m.comorb.bp || '未记录'],
+    ['BMI', m.comorb.bmi || '未记录'],
+    ['空腹血糖', m.comorb.glucose || '未记录'],
+    ['血脂', m.comorb.lipids || '未记录'],
+  ];
+  const chart = (label, code) => {
+    const pts = seriesAll(code);
+    if (!pts.length) return '';
+    return `<div class="card" style="margin-bottom:10px"><div class="card-head"><div><h2>${esc(label)}</h2><p>${esc(pts[0].d)} → ${esc(pts[pts.length - 1].d)} · ${pts.length} 点</p></div></div>${chartSVG([{ code, pts: pts.map((x) => ({ d: x.d, v: x.v })) }])}</div>`;
+  };
+  return `${head('化验与指标趋势', '数值只照抄化验单并带参考区间语境；孕激素/激素治疗期按医生节奏复查肝肾功能与血脂血糖；本页不解读、不给目标值。')}
+  <div class="section-title"><div><h2>代谢与心血管（激素治疗期监测语境）</h2><p>孕激素/激素治疗期间，医生可能按个人情况加查肝肾功能、血脂血糖——记录原文，本页不解读。</p></div></div>
+  <div class="card">${rows.map(([k, v]) => `<div class="pd-row"><em>${esc(k)}</em><span class="small-note">${esc(v)}</span></div>`).join('')}
+    <p class="small-note" style="margin-top:8px">异常与否由医生判断；本页不写「偏高/偏低」。</p></div>
+  <div class="section-title"><div><h2>本台已记录的数值趋势</h2><p>点卡片看曲线；数值只照抄，不写目标值。</p></div></div>
+  ${chart('体重（kg）', 'WEIGHT')}
+  ${chart('出血持续天数', 'BLEED_DAYS')}
+  ${chart('内膜厚度（TVS 双层，mm）', 'IMG_MM')}
+  <div class="notice plain">化验单原件在「资料库与导入」；本页数值与之同源。参考区间以化验单自带为准。</div>
+  <div class="actions" style="margin-top:12px"><button class="soft" data-action="go" data-page="followup" data-sub="comorb" data-step="fu-comorb">看慢病与生活方式 →</button></div>`;
+}
+
 function pageFuLifestyle() {
   const p = profile();
   const c = p.followup.comorb;
@@ -1123,7 +1149,7 @@ const RENDERERS = {
   'fertility/decision': pageFertDecision, 'fertility/progestin': pageFertProgestin, 'fertility/conceive': pageFertConceive,
   'lynch/testing': pageLynchTesting, 'lynch/family': pageLynchFamily, 'lynch/comm': pageLynchComm,
   'intimate/symptoms': pageIntimateSymptoms, 'intimate/dilator': pageIntimateDilator, 'intimate/comm': pageIntimateComm,
-  'followup/calendar': pageFuCalendar, 'followup/imaging': pageFuImaging, 'followup/lifestyle': pageFuLifestyle,
+  'followup/calendar': pageFuCalendar, 'followup/imaging': pageFuImaging, 'followup/labs': pageFuLabs, 'followup/lifestyle': pageFuLifestyle,
   'chart/': pageChart,
   'mind/feelings': pageMindFeelings, 'mind/body': pageMindBody, 'mind/fertility': pageMindFertility,
   'docs/library': pageDocsLibrary, 'docs/candidates': pageDocsCandidates, 'docs/prepare': pageDocsPrepare, 'docs/trials': pageDocsTrials
