@@ -156,7 +156,7 @@ const A = {
       { key: 'p53', marker: 'p53', result: 'not_detected', value: '野生型表达模式（散在弱阳性）', method: '免疫组化 IHC', specimen: '手术标本', d: '2026-06-16', explain: '报告写「野生型表达模式」。这是蛋白表达模式，不是基因测序；异常模式也不等于某一种组织学类型。' },
       { key: 'POLE', marker: 'POLE', result: 'not_tested', value: '未检测（报告里没有这一项）', method: '—', specimen: '—', d: '', explain: '报告中没有 POLE 检测。未检测不等于阴性，也不等于「没有 POLE 突变」；要不要补测，请问医生。' }
     ],
-    multiple: 'POLEmut 与 MMRd（PMS2 缺失）并列：报告注明 multiple classifier；按 FIGO 2023，以 POLEmut 定最终标签（IAmPOLEmut）。两条分子特征并列记录，不合并、不择一丢弃。',
+    multiple: '本档案为单一分子语境：MMR 完整（pMMR）、p53 野生型、POLE 未检测；报告未注明 multiple classifier。POLE 未检测不等于非超突变——未检测就是未检测。',
     testsStatus: 'MMR：已出结果；p53：已出结果；POLE：未提供检测（not_tested）。'
   },
 
@@ -549,7 +549,7 @@ const B = {
       { key: 'p53', marker: 'p53', result: 'not_detected', value: '野生型表达模式', method: '免疫组化 IHC', specimen: '宫腔镜活检标本', d: '2026-05-08', explain: '报告写「野生型表达模式」；这是蛋白表达模式，不是基因测序。' },
       { key: 'POLE', marker: 'POLE', result: 'detected', value: 'POLE 超突变（致病性变异，检出）', method: '肿瘤组织测序', specimen: '宫腔镜活检标本', d: '2026-06-10', explain: '报告写「POLE 核酸外切酶域致病性变异，超突变表型」。文献语境：这类分子特征在部分研究中与较好预后相关；这是文献语境引用，不代替医生对你个人的判断。' }
     ],
-    multiple: '本档案不是多重分类（报告未注明 multiple classifier）；POLE 与 MMR 结果并列记录，不写「哪个更严重」。',
+    multiple: 'POLEmut 与 MMRd（PMS2 缺失）并列：报告注明 multiple classifier；按 FIGO 2023 以 POLEmut 定最终标签（IAmPOLEmut）。两条特征并列记录，不合并、不择一丢弃，也不写「哪个更严重」。',
     testsStatus: 'MMR：已出结果；p53：已出结果；POLE：已出结果（致病性变异）。'
   },
 

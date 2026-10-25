@@ -34,11 +34,17 @@ for (const p of DATA.profiles || []) {
     errors.push(`${p.id}: POLEmut 在 I–II 期时 finalLabel 必须以 IAmPOLEmut 开头（实际「${finalLabel}」）`);
   }
   const feats = [ /POLE.{0,6}(超突变|mut|检出)/i.test(marker), /PMS2|MMR|pMMR|dMMR/i.test(marker) ? /PMS2|MMR.?d/i.test(marker) : false ].filter(Boolean).length;
-  const multiple = String(p.stage?.multiple || '');
+  const multiple = String(p.molecular?.multiple || '');
   if (feats >= 2 && /不是多重分类/.test(multiple)) {
     errors.push(`${p.id}: 含 ≥2 分子特征却写「不是多重分类」`);
   }
+  // ④ 单一特征档案不得出现「POLEmut 与 MMRd 并列」类文案
+  const singleContext = /pMMR|p53\s*野生/i.test(marker) && /POLE.{0,8}未检测/i.test(marker);
+  if (singleContext && /POLEmut\s*与\s*MMRd/.test(multiple)) {
+    errors.push(`${p.id}: 单一特征档案却写「POLEmut 与 MMRd 并列」`);
+  }
 }
+
 
 if (errors.length) { console.error('✗ 分期一致性断言失败：'); errors.forEach((e) => console.error('  - ' + e)); process.exit(1); }
 console.log('✓ 分期一致性断言通过（anatomical/finalLabel 同源、POLEmut 标签、多重分类如实）');

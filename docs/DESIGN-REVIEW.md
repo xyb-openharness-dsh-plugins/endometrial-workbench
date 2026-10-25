@@ -164,3 +164,110 @@ node scripts/probe-responsive.mjs   # 90 views, overflow/vertical/clipped = 0
 # 折叠卡/一图秀（CDP）：3 cards / open 0 / blocks 5,5,5；.chart .line fill=none ×3
 # 打印（CDP Page.printToPDF）：2 页，仅 summary 文本，.pd-block 文本缺失
 ```
+
+---
+
+# §返工复审
+
+## R0. 元信息
+
+| 项 | 内容 |
+| --- | --- |
+| 复审人 / 模型 | 独立评审员（GLM-5.3 / max），非本仓作者模型 |
+| 复审日期 | 2026-10-25 |
+| 代码基线 | HEAD `214cd88`（返工提交 `e3a3f0e` + 截图重出 `214cd88`） |
+| 复审对象 | 初审 §2/§3 的 P0×2 与 P1 抽查；新问题扫描 |
+| 方法 | 逐项读源码 + 实测（node 断言脚本、无头 Chrome CDP、Page.printToPDF、pypdf 文本核验、截图目视、mtime 比对）；不采信提交说明 |
+| 声明 | 本复审只追加记录，不删除初审正文；结论不代表发布授权。 |
+
+**结论先行：P0-2 CLOSED；P0-1 仍 OPEN（并新增 1 个 P0 级数据错误）。总体判断：仍需返工，不可签 G2。**
+
+---
+
+## R1. P0 关闭表
+
+### P0-1　FIGO 2023 分期/分子数据自相矛盾 —— **OPEN**
+
+| 子项 | 验证命令 / 证据 | 实测输出 | 判定 |
+| --- | --- | --- | --- |
+| demo1 三段期别同为 IA2 | `grep -n "stageLine\|anatomical\|finalLabel" prototypes/v0.2/demo-data.js` | `:82` stageLine=IA2 期；`:248` anatomical=IA2；`:249/:258` finalLabel=IA2（`:239/:240` 为术前暂定 IA，合理） | **PASS** |
+| 旧串 `IB 期（肌层浸润 <1/2）` 清零 | `grep -rn "IB 期（肌层浸润 <1/2）" . --include='*.js' --include='*.md'` | 产品代码 0 处；**全文 3 处全部在 `docs/DESIGN-REVIEW.md:45-47` 的初审引文里**（历史记录，应保留） | **PASS（附注）** |
+| 看板/导出/分期截图重出 | `stat -f "%Sm %N" docs/screenshots/*.png docs/shots/stage-figo-demo1.png` | dashboard / export / stage-figo 均 `Oct 25 10:35`，晚于返工提交 10:33；目视首屏与导出均为 `IA2 期（肌层浸润 <1/2）` | **PASS** |
+| demo2 stageLine 与分期页一致 | `demo-data.js:1303` | `FIGO 2023：IAmPOLEmut（肌层浸润 <1/2 + POLE 致病性变异）；MMR：PMS2 缺失（并列记录）`；`:1475/:1484` finalLabel=IAmPOLEmut | **PASS** |
+| demo2 `multiple` 如实写 multiple classifier | `demo-data.js:1527` | 仍为「**本档案不是多重分类**（报告未注明 multiple classifier）」；而 `:1504` POLE 致病性变异 + `:1484` PMS2 缺失，按 `medical-constraints.md:171` 规则 4 属 multiple classifier | **OPEN（初审第 3 条未修）** |
+| demo1 `multiple` 不伪造 | `demo-data.js:301`；`demo/build-demo-data.mjs:159`；渲染于 `app.js:516` | 被写成「POLEmut 与 MMRd（PMS2 缺失）并列…IAmPOLEmut」，但 demo1 三个 marker 是 pMMR + p53 野生 + POLE **未检测**（`:270-295`）。同页卡片与结论互相矛盾 | **新增 P0** |
+| 数据断言可拦住上述错误 | `cat scripts/check-stage-consistency.mjs` | 脚本读的是 `p.stage?.multiple`（`:37`），真实字段是 `p.molecular.multiple` → 恒为空串，**空转通过**；且未校验 `diagnosis/diagnosisShort` | **FAIL** |
+| 断言进 check 链 | `grep -n '"check"' package.json`；`grep -rn check-stage-consistency` | `check` = `node --check dsh/index.js && node --check lib/client.js && node scripts/check-workbench-package.mjs .`；全仓仅脚本自身出现，`release:check`/`audit` 也未调用 | **FAIL** |
+| 档案级事实同步 | `demo-data.js:80-81`；`demo/build-demo-data.mjs:84-85`；`demo/demo-data.json:79-80`；`index.html:20` | 仍为「**FIGO IB 期**」/「FIGO IB · 放疗后随访」；`app.js:378` 写入 `#profile-meta`、`:1024` 档案切换、`:344` AI 上下文均用 `diagnosisShort` | **OPEN** |
+
+**P0-1 的可见后果（实测）**：治疗路径页 `Page.printToPDF` 提取文本首行含 `周慧敏的资料52 岁 · 子宫内膜样 G2 · FIGO IB · 放疗后随访`，而同一 PDF 正文写 IA2；档案切换弹层与 AI 提示上下文同样带 IB。即「默认档案 + 打印件」仍在把 IB 送进医生视野。
+
+**一句话**：只改了 `stageLine` 与分期版本链，没改档案级 `diagnosis/diagnosisShort`；`multiple` 的修复串被误贴到 demo1、demo2 原样保留；新增的断言脚本字段路径写错且未接入任何 check。P0-1 **不关闭**。
+
+### P0-2　32 号折叠卡打印展开 —— **CLOSED**
+
+| 验证 | 命令 / 实测 | 输出 | 判定 |
+| --- | --- | --- | --- |
+| 实现存在 | `app.js:1172-1185` | `beforeprint` 时 `folds.forEach(d => d.open = true)`，`afterprint` 按 `prior` 恢复 | **PASS** |
+| beforeprint 生效 | CDP 打开 `#treatment/pathway` → `dispatchEvent(new Event('beforeprint'))` | initial `{n:3,open:0}` → during `{n:3,open:3}` → after `{n:3,open:0}`（恢复正确） | **PASS** |
+| 打印媒体可见 | `Emulation.setEmulatedMedia({media:'print'})` | 15 个 `.pd-block` 全部非空；`::details-content` `contentVisibility=visible`，`display=block` | **PASS** |
+| PDF 含正文 | `Page.printToPDF`（printBackground） | **5 页 / 975,283 字节**（>500KB 门槛）；pypdf + NFKC 文本核验：方案 / 指标和趋势 / 影像发现 / 副作用总结 / 心理与营养措施及效果 五标题各出现 5 次（心理标题 4 次因换行断词），三卡五块齐全 | **PASS** |
+| 自验已升级 | `grep -n "beforeprint\|printToPDF" scripts/probe-proto.mjs` | 仅 `:275-279` 查 cards/open/blocks/titles，无打印断言 | **未做（非关闭门槛，记为遗留）** |
+| 模版同步 | `docs/32-…md:28,40`；`templates/TREATMENT-PATHWAY.md:21`；`docs/INTERACTION-DESIGN.md:96` | 仍写「`@media print` 规则源码存在/全展开」；未写 `beforeprint` JS。实现对了，规范与判据没跟上 | **未同步** |
+
+---
+
+## R2. P1 抽查（本轮指定 3 项）
+
+| 项 | 证据 | 判定 |
+| --- | --- | --- |
+| AI 家系分支零条数 | `app.js:354`：「家系记录为第三方私密（已按三出口过滤，**不带条数与内容**）」 | **PASS** |
+| 对照表含 p53abn / NSMP | `demo-data.js:331` p53abn、`:339` NSMP（demo1 共 6 行，四型覆盖成立）；demo2 `:1541-1565` 仍只有 4 行（POLEmut/保育/MMR/保育后），无 p53abn、NSMP | **PASS（demo1）/ 部分（demo2）** |
+| SPEC/DIFF 页面树含「放疗后私密」独立 | `SPEC.md` F-RAIPRIV；`DIFF-MATRIX.md` 二、「放疗后私密（独立，私密段）」 | **PASS** |
+| 附：页面计数仍不同源 | `DIFF-MATRIX.md` 仍写 营养与生活（3）/ 心理与身体意象（4）/ 随访（3），实际 `app.js:66-67` 为 随访 4 / 心理 3 / 营养并入随访；`SPEC.md` 仍列 11 个 F-ID（含 F-SET）后又写「10 线」 | **P1-8 未闭合** |
+
+---
+
+## R3. 新增问题（本轮实测发现）
+
+| # | 级别 | 问题 | 落点 / 证据 |
+| --- | --- | --- | --- |
+| N-1 | **P0** | demo1 被伪造成 multiple classifier：数据声称 POLEmut + MMRd 并列，同页 marker 却是 pMMR + POLE 未检测。这是返工引入的新医学语义错误，且直接在分子页可见 | `demo-data.js:301`；`demo/build-demo-data.mjs:159`；渲染 `app.js:516` |
+| N-2 | **P0** | 分期断言空转：读 `p.stage?.multiple`（不存在），真实字段在 `p.molecular.multiple`；且不在 `npm run check` / `release:check` / `audit` 任一链路。「加了断言」不成立 | `scripts/check-stage-consistency.mjs:37`；`package.json:23` |
+| N-3 | **P0 残留** | `diagnosis/diagnosisShort` 仍写 FIGO IB（4 个数据/模板落点 + 静态 HTML），随打印头、档案切换、AI 上下文外泄；本次新 PDF 实测命中 | `demo-data.js:80-81`；`demo/build-demo-data.mjs:84-85`；`demo/demo-data.json:79-80`；`index.html:20`；`app.js:344,378,1024` |
+| N-4 | P1 | README 分子截图已过期：`readme-molecular-0.2.0.png` mtime 09:51，早于数据改动 10:33；图里 demo1 仍显示「本档案不是多重分类」，与当前 demo1 数据（已变成 multiple classifier）相反，README 与原型不同源 | `docs/screenshots/readme-molecular-0.2.0.png`（09:51）vs `demo-data.js:301` |
+| N-5 | P1 | 32 号模版与验收判据未随实现修正：`docs/32` §3.4/§5 与 `templates/TREATMENT-PATHWAY.md:21` 仍以「CSS 源码存在」为通过条件；这正是初审认定不能证明展开的旧判据。提交说明「32 号模版修正」在文件中无对应改动 | `docs/32-TREATMENT-PATHWAY-FOLDOUT.md:28,40`；`templates/TREATMENT-PATHWAY.md:21` |
+| N-6 | P1 | `probe:proto` 仍未断言打印输出（只查 cards/open/blocks），P0-2 类回归无法被自验发现 | `scripts/probe-proto.mjs:275-279` |
+| N-7 | P1 残留 | 重截后的看板仍把「私密记录（只给自己看）」放在「女儿（照护者）· 代记入口」列（P1-3 未修）；「MMR 未检出 · p53 未检出」（P1-1 未修）；导出 `privateFilter` 仍输出「N 条私密/第三方记录未包含」计数（P2-7 未修） | `app.js:434-462`；`docs/screenshots/readme-dashboard-0.2.0.png`；`app.js:164` |
+| N-8 | P2 | demo2 解剖期仍为「IA 期（肌层浸润 <1/2，MRI）」，未按初审要求写 IA2；FIGO 2023 无裸 IA 亚期，断言脚本的正则把 IA 与 IA 视为同源，无法提示 | `demo-data.js:1474`；`scripts/check-stage-consistency.mjs` roman 比较 |
+
+---
+
+## R4. 其它实测（无回归）
+
+| 命令 | 输出 |
+| --- | --- |
+| `npm run check` | `staticPass: true`，`errors: []`（2 条既有 warning）；**注意：不含分期一致性断言**（见 N-2） |
+| `npm run check:hvt` | `ok:true`；X1 30/30、X2 26/26、X3 32 views / max 5 fields、X4 pages 10 / 1111 / `endo:agent-draft`；consoleErrors 0 |
+| README 图片路径 | 6/6 存在（dashboard / molecular / one-chart / fold-closed / fold-open / export） |
+| `npm run demo:build` | 生成成功且 `git status` 干净；说明 `build-demo-data.mjs` 与产物一致——但两者**同源同错**（N-1/N-3 均在该源里） |
+
+---
+
+## R5. 总体判断
+
+**仍需返工，不可签 G2。**
+
+- **P0-2 已关闭**：beforeprint → 3 卡全开 → PDF 975KB/5 页、五块文本可提取 → afterprint 恢复；这次是实测通过，不是源码声明。
+- **P0-1 未关闭**，且比初审更糟一层：
+  1. demo2 `multiple` 的原错误原样保留；
+  2. 本该给 demo2 的 multiple-classifier 文案被贴到 demo1，造成「pMMR + POLE 未检测」的档案自称 POLEmut+MMRd 的新伪造；
+  3. `diagnosisShort` 的 FIGO IB 仍在 4 个落点，并已随打印件/档案切换/AI 上下文外泄；
+  4. 新增断言因字段路径写错而空转，且未接入 `npm run check`——这次「自验通过」不构成证据。
+- **下一步最小返工清单**（按顺序）：
+  1. 把 `multiple` 文案从 demo1 移回 demo2，并按 multiple classifier 改写；demo1 恢复为「非多重分类（POLE 未检测）」；
+  2. 改 `diagnosis`/`diagnosisShort`（demo-data 源 + build 源 + json + index.html 静态兜底）为 IA2 / IAmPOLEmut；
+  3. 修断言：读 `p.molecular.multiple`，补 `diagnosisShort` 与 `stageLine` 期别同源检查，并加入 `npm run check`；
+  4. 重出 `readme-molecular-0.2.0.png`（以及任何受 `diagnosisShort` 影响的截图）；
+  5. 回写 `docs/32` §3.4/§5 与 `templates/TREATMENT-PATHWAY.md`：判据改为「打印媒体下 `.pd-block` 文本可提取」，并把 `probe:proto` 升级为 `Page.printToPDF` 文本断言。
+- 关闭以上 5 项后，可再次提交返工复审；在此之前 G2 走查会带着「打印件写 IB、分子页自称多重分类」两处医生一眼可见的错误。
