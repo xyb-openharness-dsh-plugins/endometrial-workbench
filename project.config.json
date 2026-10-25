@@ -1,0 +1,18 @@
+{
+  "packageName": "@xyb-community/endometrial-workbench",
+  "title": "子宫内膜癌患者工作台",
+  "repository": "https://github.com/xyb-openharness-dsh-plugins/endometrial-workbench",
+  "description": "面向子宫内膜癌患者与照护者的本机病程资料、FIGO 2023 分子分型、Lynch 家系、保育治疗决策、出血日志与放疗后私密记录工作台设计项目",
+  "slug": "endometrial-workbench",
+  "layoutMode": "business-first",
+  "businessWidth": 0.65,
+  "targetUsers": "子宫内膜癌患者与照护者双主体；覆盖异常出血自查、确诊与分子分型（MMR/p53/POLE）、保育治疗决策（年轻未育）、手术与辅助治疗、放疗后私密健康、Lynch 家系沟通与长期随访",
+  "scenario": "患者与照护者整理出血日志、病理与分子分型（MMR/p53/POLE）、影像与手术记录、治疗周期、阴道残端随访与私密健康材料，追踪分型与治疗对照，准备复诊问题并回顾医生确认后的记录",
+  "coreFlow": [
+    "选择本地资料目录并登记出血日志、病理与分子分型、影像与手术、治疗与随访材料",
+    "核对分子三态（未检测不等于阴性）、分型与分期引用、保育路径与家系记录（第三方信息默认私密）",
+    "查看时间轴与趋势，标记症状与待办，生成复诊摘要与问题清单",
+    "照护者以代记身份记录症状与随访，私密内容分级管理，并把明确任务交给 Desktop 原生 Agent 会话"
+  ],
+  "completion": "患者与照护者确认的资料和随访时间轴、可追溯的分子分型与治疗对照、出血与私密健康记录、复诊摘要均保存在明确选择的本机资料目录中；私密内容按 visibility 分级且三处出口过滤"
+}

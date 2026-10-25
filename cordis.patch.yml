@@ -1,0 +1,5 @@
+- insert:
+    - id: endometrial-workbench-main
+      name: "@xyb-community/endometrial-workbench"
+      config:
+        root: !!js dshHomePath('endometrial-workbench')
