@@ -23,3 +23,15 @@ README/许可证/素材来源/运行依赖/更新说明：...
 回滚步骤/数据兼容检查/已知限制：...
 
 工作台市场发布另按 docs/10-MARKET-PUBLISHING.md 执行，附 templates/MARKET-ACCEPTANCE.md 的指定版本手工确认。官方指南复核日期/来源：... 最终安装来源：... 用户确认的项目与执行者：... PR URL/最新提交检查实际执行结果：... 市场目录可见与可安装证据：...。未授权投稿时标不适用，不把 Git push 当市场发布。
+
+## 0.2.0 装机记录（M6 · 2026-10-25）
+
+| 项 | 值 |
+| --- | --- |
+| tgz | `release/xyb-community-endometrial-workbench-0.2.0.tgz`（npm shasum b8e6a710…） |
+| 四要素（tgz 内容） | H1 dsh 块+repository ✅ / H2 config.root ✅ / H3 真客户端占位=0 ✅ / H4 版本同源 v0.2.0 ✅；**打印块×2 在 tgz** |
+| 安装 | `NODE_OPTIONS= corepack pnpm add -w --save-exact file:…0.2.0.tgz`；bundles 登记 |
+| 五要素 | 装机副本 ver 0.2.0 / dsh 块 / file 依赖 / 占位=0 / `printExpandFoldouts` 2 ✅ |
+| M5 交付 | check EXIT=0（37/37 单测 + audit 37/37 + **分期一致性**）；parity deepStrictEqual；HVT 30/30；窄宽 90 视图 0 问题；computed fill=none；probe:install 30/30 |
+| **V2/V3** | **未验证**——待用户重启 Desktop → 添加小膜宝 → **先新建会话** → 走核心流程（分型页/保育/家系/放疗私密/折叠卡打印/导出过滤） |
+| 挂账 | 33 号 README 真机截图刷新（M6 后）；真实病例/离线语料/正式遗传咨询未做 |
