@@ -72,7 +72,7 @@ function nodes(start, interval, count) {
 
 /* =====================================================================
    档案 1 · 周慧敏（演示）52 女
-   子宫内膜样 G2 · FIGO IB（肌层浸润 <1/2）· pMMR / p53 野生 / POLE 未检测
+   子宫内膜样 G2 · FIGO IA2（肌层浸润 <1/2）· pMMR / p53 野生 / POLE 未检测
    绝经后出血首诊（3 条）· 术后辅助阴道残端近距离放疗（3 阶段折叠卡）
    放疗后阴道干燥/性交痛（private）· Lynch 未筛查
    ===================================================================== */
@@ -82,7 +82,7 @@ const A = {
   age: 52,
   sex: '女',
   diagnosis: '子宫内膜样腺癌 G2 · FIGO IA2 期 · 术后辅助阴道残端近距离放疗后（演示）',
-  diagnosisShort: '子宫内膜样 G2 · FIGO IB · 放疗后随访',
+  diagnosisShort: '子宫内膜样 G2 · FIGO IA2 · 放疗后随访',
   stageLine: 'FIGO 2023：IA2 期（肌层浸润 <1/2）；分子：pMMR / p53 野生型 / POLE 未检测',
   primaryRole: 'PATIENT',
   caregiverLabel: '女儿（照护者）',

@@ -78,7 +78,7 @@ window.DEMO_DATA = {
       "age": 52,
       "sex": "女",
       "diagnosis": "子宫内膜样腺癌 G2 · FIGO IA2 期 · 术后辅助阴道残端近距离放疗后（演示）",
-      "diagnosisShort": "子宫内膜样 G2 · FIGO IB · 放疗后随访",
+      "diagnosisShort": "子宫内膜样 G2 · FIGO IA2 · 放疗后随访",
       "stageLine": "FIGO 2023：IA2 期（肌层浸润 <1/2）；分子：pMMR / p53 野生型 / POLE 未检测",
       "primaryRole": "PATIENT",
       "caregiverLabel": "女儿（照护者）",
