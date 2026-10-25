@@ -798,19 +798,24 @@ function pageFuLabs() {
     ['空腹血糖', m.comorb.glucose || '未记录'],
     ['血脂', m.comorb.lipids || '未记录'],
   ];
-  const chart = (label, code) => {
+  const miniSpark = (label, code, unit) => {
     const pts = seriesAll(code);
     if (!pts.length) return '';
-    return `<div class="card" style="margin-bottom:10px"><div class="card-head"><div><h2>${esc(label)}</h2><p>${esc(pts[0].d)} → ${esc(pts[pts.length - 1].d)} · ${pts.length} 点</p></div></div>${chartSVG([{ code, pts: pts.map((x) => ({ d: x.d, v: x.v })) }])}</div>`;
+    const vals = pts.map((x) => x.v);
+    const lo = Math.min(...vals), hi = Math.max(...vals), span = hi - lo || 1;
+    const W = 560, H = 46, X0 = 6;
+    const xy = pts.map((x, i) => `${(X0 + (i / (pts.length - 1)) * (W - 12)).toFixed(1)},${(H - 8 - ((x.v - lo) / span) * (H - 16)).toFixed(1)}`);
+    return `<div class="card" style="margin-bottom:10px"><div class="card-head"><div><h2>${esc(label)}</h2><p>${esc(pts[0].d)} → ${esc(pts[pts.length - 1].d)} · ${pts.length} 点 · 区间 ${lo}–${hi} ${esc(unit)}</p></div></div>
+      <svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" role="img" aria-label="${esc(label)}趋势（只照抄，不解读）"><polyline points="${xy.join(' ')}" fill="none" stroke="#8A5B7B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>${pts.map((x, i) => `<circle cx="${xy[i].split(',')[0]}" cy="${xy[i].split(',')[1]}" r="2.6" fill="#8A5B7B"/>`).join('')}</svg></div>`;
   };
   return `${head('化验与指标趋势', '数值只照抄化验单并带参考区间语境；孕激素/激素治疗期按医生节奏复查肝肾功能与血脂血糖；本页不解读、不给目标值。')}
   <div class="section-title"><div><h2>代谢与心血管（激素治疗期监测语境）</h2><p>孕激素/激素治疗期间，医生可能按个人情况加查肝肾功能、血脂血糖——记录原文，本页不解读。</p></div></div>
   <div class="card">${rows.map(([k, v]) => `<div class="pd-row"><em>${esc(k)}</em><span class="small-note">${esc(v)}</span></div>`).join('')}
     <p class="small-note" style="margin-top:8px">异常与否由医生判断；本页不写「偏高/偏低」。</p></div>
   <div class="section-title"><div><h2>本台已记录的数值趋势</h2><p>点卡片看曲线；数值只照抄，不写目标值。</p></div></div>
-  ${chart('体重（kg）', 'WEIGHT')}
-  ${chart('出血持续天数', 'BLEED_DAYS')}
-  ${chart('内膜厚度（TVS 双层，mm）', 'IMG_MM')}
+  ${miniSpark('体重（kg）', 'WEIGHT', 'kg')}
+  ${miniSpark('出血持续天数', 'BLEED_DAYS', '天')}
+  ${miniSpark('内膜厚度（TVS 双层，mm）', 'IMG_MM', 'mm')}
   <div class="notice plain">化验单原件在「资料库与导入」；本页数值与之同源。参考区间以化验单自带为准。</div>
   <div class="actions" style="margin-top:12px"><button class="soft" data-action="go" data-page="followup" data-sub="comorb" data-step="fu-comorb">看慢病与生活方式 →</button></div>`;
 }
