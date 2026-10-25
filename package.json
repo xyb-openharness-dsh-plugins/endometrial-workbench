@@ -1,6 +1,6 @@
 {
   "name": "@xyb-community/endometrial-workbench",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "面向子宫内膜癌患者与照护者的本机病程资料、FIGO 2023 分子分型、Lynch 家系、保育治疗决策、出血日志与放疗后私密记录工作台设计项目",
   "private": true,
   "type": "module",
@@ -27,7 +27,13 @@
     "pack:check": "npm pack --dry-run",
     "probe:artifact": "node scripts/serve-artifact.mjs",
     "probe:tabs": "python3 scripts/verify-tabs-on-artifact.py",
-    "probe:page-view": "node scripts/probe-page-view.mjs"
+    "probe:page-view": "node scripts/probe-page-view.mjs",
+    "demo:build": "node demo/build-demo-data.mjs",
+    "probe:proto": "node scripts/probe-proto.mjs",
+    "probe:resp": "node scripts/probe-responsive.mjs",
+    "check:hvt": "node scripts/check-hvt.mjs",
+    "shots:readme": "node scripts/shots-readme.mjs",
+    "verify:m2": "node demo/build-demo-data.mjs && node scripts/probe-proto.mjs && node scripts/probe-responsive.mjs && node scripts/check-hvt.mjs"
   },
   "dsh": {
     "bundle": {

@@ -1,44 +1,73 @@
-# 子宫内膜癌患者工作台
+# 小膜宝 EndoPal · 子宫内膜癌患者工作台
 
-面向子宫内膜癌患者与照护者的本机病程资料、FIGO 2023 分子分型、Lynch 家系、保育治疗决策、出血日志与放疗后私密记录工作台设计项目
+面向子宫内膜癌患者与照护者：把**出血、分型、治疗、保育选择、Lynch 家系、放疗后私密与随访**放回一条时间线上，复诊时有据可查。
 
-这是接入骨架，尚未实现真实业务。初始化后先将 [项目设计提示词](docs/DESIGN-PROMPT.md) 交给当前Agent；它应展示实际路径并以已有用户/场景/流程素材对齐设计者、研究与取舍原则。癌种项目另有 [完整专用提示词](prompts/NEW-CANCER-WORKBENCH.md)。需求见 [BRIEF](docs/BRIEF.md)，规格见 [SPEC](docs/SPEC.md)，任务见 [TASKS](docs/TASKS.md)；先读 [AGENTS](AGENTS.md)。CLI输出交接与首问，实际对话由Agent接续。
+**不做声明**：不诊断、不判断疾病性质、不合成治疗建议、不判分型、不预测妊娠机会、不劝家属检测。所有判读归妇科肿瘤治疗团队；私密与家系第三方信息默认只存在本机。
 
-## 开发顺序
+## 关键功能
 
-先共创SPEC和候选数据关系，再交付HTML交互工作台；由用户确认对应版本/模块后，复核SCHEMA/API并实现生产功能。确认记录见docs/PROTOTYPE-REVIEW.md；模型不依赖前端Tab/流程。模板骨架不是业务已确认。
+### 一眼看到「现在该做什么」
+双主体入口（本人 / 照护者代记）+ 出血待记录、分子待读（未检测≠阴性）、随访节点三张状态卡。
 
-## 当前能力
+![看板](docs/screenshots/readme-dashboard-0.2.0.png)
 
-- 一个 DSH 工作台注册、认证的健康接口、版本展示与标准/大字切换。
-- 已明确选择布局：business-first。business-first 使用 customFrame；模板不创建会话或复制聊天。需要 AI 协助时按官方合同接入原生 conversation 和会话管理。
-- 无业务数据库、无演示患者、无真实密钥；所有业务页按确认 spec 逐项实现。
+### 分型看不懂时，先看三态与原文
+MMR / p53 / POLE 各自独立：检出、未检出、**未检测**三态并列；未检测不等于阴性，分型判定归医生。
 
-## 开发与本地验收
+![分子三态](docs/screenshots/readme-molecular-0.2.0.png)
 
-需要 Node.js 22+、Git、包管理器和可用 DSH Desktop；采用 SQLite 时另核验 node:sqlite 版本条件。宿主 peers 的范围仅是模板基线，请与目标 Desktop 实际依赖核对。
+### 变化发生在哪一步
+体重、出血天数、同模态内膜厚度放回同一段时间；分类节点只画点不连线。**没有 SCC-Ag，也不做肿瘤标志物趋势。**
+
+![一图秀](docs/screenshots/readme-one-chart-0.2.0.png)
+
+### 治疗走到哪一步（默认概要）
+阶段名 + 日期 + 一句话；不展开也能回答「下一步是什么」。
+
+![治疗线折叠卡-收起](docs/screenshots/readme-treatment-fold-closed-0.2.0.png)
+
+### 医生要细节时，点开就是五块
+方案 / 指标和趋势 / 影像发现 / 副作用总结 / 心理与营养措施及效果；影像与副作用只抄原文，效果只放患者原话。
+
+![治疗线折叠卡-展开](docs/screenshots/readme-treatment-fold-open-0.2.0.png)
+
+### 复诊只带该带的
+两区导出（事实 / 我的看法与担心）；放疗后私密、身体意象、生育焦虑、家系第三方信息默认过滤，不进入导出。
+
+![导出与私密过滤](docs/screenshots/readme-export-private-0.2.0.png)
+
+## 怎么用
+
+1. 双击打开 `prototypes/v0.2/index.html`（无需构建、无需联网；全部为演示数据）。
+2. 左侧 10 条一级线、页内 30 个二级页签；看板 13 枚场景 chip 可直达。
+3. 右上「AI 对话」可展开/收起；每页「AI 协助」会把提示词 + 本页病情上下文填入会话草稿（`endo:agent-draft`），**不会自动发送**。
+4. 档案可在左上角切换：周慧敏（52 女，术后放疗后随访）/ 李思（31 女，保育治疗中）。
+
+接入 DSH Desktop 时：安装本地 tgz（`npm pack` 后按 Desktop 帮助安装）或在 profile 中 `pnpm add`；首次先新建会话。原型阶段不读写真实文件、不调用模型。
+
+## 数据与口径
+
+- **唯一数据源**：`demo/build-demo-data.mjs`（改数据只改它，重跑生成 `prototypes/v0.2/demo-data.js` 与 `demo/demo-data.json`）。两档案 × 6 个月（2026-04-24 → 2026-10-24）。
+- **全部为合成演示数据**，人物、数值与时间线不指向任何真实患者；不构成诊疗建议。
+- 分期：FIGO 2023（含分子标签）只做**版本链引用**（解剖期 + 最终标签 + 依据原文 + 日期 + 是否因分子改期），无 TNM→期别推导列。
+- 出血日志是**独立轨道**：只记模式/量/天数/血块/排液/诱因，无病因、无疾病性质、无严重度列。
+- 保育：零方案推荐、零概率数字；**没有活产也不后悔，是合理结局**——不以活产作为唯一成功标准。
+- Lynch：肿瘤 MMR ≠ 胚系结论；家系只存关系/癌种/年龄/代号，`third_party=1` + `consent=1`，默认 `private`；**不知情也是合法选择**。
+- 一图秀：Fritsch–Carlson 单调三次；各线按自身范围缩放、不可比；单点不连线；`.chart .line` 的 computed `fill` 必须是 `none`。
+- 试验线索来自 `research/endometrial-cancer/trials-2026.jsonl` 的 2026-10 登记快照：登记状态未核实，NMPA 逐药「待核验」，不是推荐。
+- 版本：`0.2.0`（`VERSION` / `package.json` / 原型首屏一致）。
+
+## 开发
 
 ```bash
-npm install
-npm run check
-npm run pack:check
-npm pack
+npm run demo:build      # 重新生成两档案 × 6 个月演示数据
+npm run probe:proto     # 64 页签截图 + 溢出/error/禁词/必现句/computed fill
+npm run probe:resp      # 8 档宽度 + AI 面板展开 × 10 一级页 = 90 视图
+npm run check:hvt       # HVT X1–X4（覆盖/路径/编辑入口/AI 候选闭环）
+npm run shots:readme    # 重新生成 docs/screenshots/ 的 6 张 README 截图
+npm run check && npm test && npm run audit
 ```
 
-`npm run check` 只保证"能装"（语法 + 装包合同），第一天就该是绿的。`npm run audit` 管"还是不是家族里的一员"：版本三处一致、`lib/layout.js` 面板参数单一来源、检查链完整、文档与密钥卫生，**只看代码与文件，不看文档自述**。新项目刚生成时 audit 必然有 fail，那是待办清单；交付/发布前必须清零，存在 fail 不得发布（`npm run release:check` 一次跑完两者）。
+当前自验数字：64 页签 / 64 截图（`docs/shots/`）、HVT X1 30/30 无孤儿、X2 26 条路径、X3 32 视图（编辑 ≤1、表单 ≤6）、X4 AI 闭环 1111 + `endo:agent-draft`；`probe:resp` 90 视图溢出 0 / 竖排单字 0 / 裁切 0；禁词 0；computed `fill:none`。
 
-跑的时间点：**每次改完**跑 `check`；**G2 原型确认后、写业务代码前**先跑一次 `audit`（这时缺的多是 `lib/layout.js`、`VERSION` 这类结构，越早补越便宜）；**交付/装机前**必须跑 `release:check`；**发布或投稿前**把 `npm run audit --json` 的 `xx/xx 通过 · N 失败 · M 待人工` 抄进 `docs/RELEASE.md` 的「家族一致性」一行。`✗` 是结构缺口（补齐，或在 `docs/DEV-REQUIREMENTS-<日期>.md` 写明偏离理由并由用户确认），`!` 是需人工判断的项（逐条给「已人工确认 / 确实没有」）。
-
-`npm install` 可能按 npm 策略解析 peer；勿为消警告重复打包宿主 runtime。客户端本身是单文件；引入 TS/组件库后需添加构建步骤并保留单文件导出。
-
-本地安装入口以当前 Desktop/CLI 帮助为准。安装后按 [docs/06-VALIDATION-AND-RELEASE.md](docs/06-VALIDATION-AND-RELEASE.md) 与官方自测完成真实 UI 验收，并填写 [docs/ACCEPTANCE.md](docs/ACCEPTANCE.md)。静态检查不代表已加载。
-
-Logo 来源与使用限制见 assets/README.md。许可证、作者、仓库/发布策略由本项目维护者确认后填写；模板默认为 private/UNLICENSED。
-
-感谢小x宝社区、DataElement 社区，以及 sam / hhx / 繁华的 ❤️ 贡献。
-
-初始化来源记录见 `.dsh-wb-starter.json`。更新社区脚手架不会覆盖本项目；需要升级时先用相同确认配置在临时目录生成，再审阅差异。CLI 用法见 [docs/CLI-GIT.md](docs/CLI-GIT.md)。
-
-## HTML先行与数据演进
-
-业务开发前先交付HTML交互工作台原型、实际预览并由用户确认版本/hash和范围。数据设计先区分领域事实、流程状态和页面读模型，走查前端/流程变化、兼容与迁移；原型对象不直接作为表。见[规范](docs/14-HTML-AND-DATA-CONTRACT.md)。
+文档索引：需求与 K1–K6 见 `docs/DEV-REQUIREMENTS-2026-10-25.md`；页面树权威见 `research-notes/family-landscape.md` §6.1–§6.3；交互与 CRUD 见 `docs/INTERACTION-DESIGN.md`；场景与流程见 `docs/SCENARIOS.md` / `docs/PATIENT-FLOW.md`；窄宽见 `docs/RESPONSIVE-RULES.md`；折叠卡与 README 截图见 `docs/32-TREATMENT-PATHWAY-FOLDOUT.md` / `docs/33-README-SCREENSHOTS.md`。
