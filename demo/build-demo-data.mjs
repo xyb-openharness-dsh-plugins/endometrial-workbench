@@ -81,7 +81,7 @@ const A = {
   name: '周慧敏（演示）',
   age: 52,
   sex: '女',
-  diagnosis: '子宫内膜样腺癌 G2 · FIGO IB 期 · 术后辅助阴道残端近距离放疗后（演示）',
+  diagnosis: '子宫内膜样腺癌 G2 · FIGO IA2 期 · 术后辅助阴道残端近距离放疗后（演示）',
   diagnosisShort: '子宫内膜样 G2 · FIGO IB · 放疗后随访',
   stageLine: 'FIGO 2023：IA2 期（肌层浸润 <1/2）；分子：pMMR / p53 野生型 / POLE 未检测',
   primaryRole: 'PATIENT',
@@ -165,7 +165,6 @@ const A = {
     note: '下表只回答「谁说了什么」：指南原文 / 中国获批 / 医保可及三列分开，没有「推荐等级」「应该用」这类列。解释不是判断。',
     cols: ['分子/病理语境', '指南原文（摘录）', '中国获批（待核验）', '医保可及（待核验）', '来源与日期'],
     rows: [
-      { ctx: 'pMMR · IA2 期 · 术后', guideline: '「对 IB 期且无其他高危因素者，辅助治疗方式（阴道近距离放疗或观察）需结合个体情况讨论。」', china: '待核验（未取到 NMPA 官方原文）', insurance: '待核验', source: 'NCCN 2026 子宫内膜癌 · 2026-02', date: '2026-02' },
       { ctx: 'POLE 未检测', guideline: '「POLE 超突变需经规范化检测确认；未检测不能推断为 POLE 超突变或非超突变。」', china: '检测可及性因机构而异', insurance: '待核验', source: 'ESGO/ESTRO/ESP 2021 · 分子分型章节', date: '2021' },
       { ctx: 'p53abn（p53 突变型）', guideline: '「p53abn 型在 I–II 期亦属高危语境，辅助治疗讨论通常更积极；具体方案由治疗团队结合病理与个体情况决定。」', china: '待核验', insurance: '待核验', source: 'ESGO/ESTRO/ESP 2021 · 分子分型章节（2025 版待核验）', date: '2021' },
       { ctx: 'NSMP（p53 野生型，非 POLE/非 MMRd）', guideline: '「NSMP 为异质性最大的一型；辅助治疗决策依赖分级、肌层浸润、LVSI 等病理因素。」', china: '待核验', insurance: '待核验', source: 'ESGO/ESTRO/ESP 2021 · 分子分型章节', date: '2021' },

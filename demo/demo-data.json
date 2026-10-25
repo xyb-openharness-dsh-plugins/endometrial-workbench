@@ -76,7 +76,7 @@
       "name": "周慧敏（演示）",
       "age": 52,
       "sex": "女",
-      "diagnosis": "子宫内膜样腺癌 G2 · FIGO IB 期 · 术后辅助阴道残端近距离放疗后（演示）",
+      "diagnosis": "子宫内膜样腺癌 G2 · FIGO IA2 期 · 术后辅助阴道残端近距离放疗后（演示）",
       "diagnosisShort": "子宫内膜样 G2 · FIGO IB · 放疗后随访",
       "stageLine": "FIGO 2023：IA2 期（肌层浸润 <1/2）；分子：pMMR / p53 野生型 / POLE 未检测",
       "primaryRole": "PATIENT",
@@ -310,14 +310,6 @@
           "来源与日期"
         ],
         "rows": [
-          {
-            "ctx": "pMMR · IA2 期 · 术后",
-            "guideline": "「对 IB 期且无其他高危因素者，辅助治疗方式（阴道近距离放疗或观察）需结合个体情况讨论。」",
-            "china": "待核验（未取到 NMPA 官方原文）",
-            "insurance": "待核验",
-            "source": "NCCN 2026 子宫内膜癌 · 2026-02",
-            "date": "2026-02"
-          },
           {
             "ctx": "POLE 未检测",
             "guideline": "「POLE 超突变需经规范化检测确认；未检测不能推断为 POLE 超突变或非超突变。」",
