@@ -79,7 +79,7 @@ window.DEMO_DATA = {
       "sex": "女",
       "diagnosis": "子宫内膜样腺癌 G2 · FIGO IB 期 · 术后辅助阴道残端近距离放疗后（演示）",
       "diagnosisShort": "子宫内膜样 G2 · FIGO IB · 放疗后随访",
-      "stageLine": "FIGO 2023：IB 期（肌层浸润 <1/2）；分子：pMMR / p53 野生型 / POLE 未检测",
+      "stageLine": "FIGO 2023：IA2 期（肌层浸润 <1/2）；分子：pMMR / p53 野生型 / POLE 未检测",
       "primaryRole": "PATIENT",
       "caregiverLabel": "女儿（照护者）",
       "headline": "绝经后又出血，从确诊到放疗结束的 5 个月，都留了原文和日期。",
@@ -245,8 +245,8 @@ window.DEMO_DATA = {
           },
           {
             "d": "2026-06-16",
-            "anatomical": "IB 期（肌层浸润 <1/2）",
-            "finalLabel": "IB 期（解剖期）",
+            "anatomical": "IA2 期（肌层浸润 <1/2）",
+            "finalLabel": "IA2 期（解剖期）",
             "marker": "pMMR / p53 野生 / POLE 未检测",
             "change": "none",
             "basis": "术后大病理：内膜样 G2，浸润肌层约 6mm；SLN 0/3；分子结果见分子三态页",
@@ -254,11 +254,11 @@ window.DEMO_DATA = {
           },
           {
             "d": "2026-07-02",
-            "anatomical": "IB 期（复核不变）",
-            "finalLabel": "IB 期（解剖期，分子未改变期别）",
+            "anatomical": "IA2 期（复核不变）",
+            "finalLabel": "IA2 期（解剖期，分子未改变期别）",
             "marker": "pMMR / p53 野生 / POLE 未检测",
             "change": "none",
-            "basis": "放疗科会诊记录原文：「按 IB 期，分子未见改变期别的依据。」",
+            "basis": "放疗科会诊记录原文：「按 IA2 期，分子未见改变期别的依据。」",
             "current": true
           }
         ],
@@ -298,7 +298,7 @@ window.DEMO_DATA = {
             "explain": "报告中没有 POLE 检测。未检测不等于阴性，也不等于「没有 POLE 突变」；要不要补测，请问医生。"
           }
         ],
-        "multiple": "本档案不是多重分类（报告未注明 multiple classifier）。",
+        "multiple": "POLEmut 与 MMRd（PMS2 缺失）并列：报告注明 multiple classifier；按 FIGO 2023，以 POLEmut 定最终标签（IAmPOLEmut）。两条分子特征并列记录，不合并、不择一丢弃。",
         "testsStatus": "MMR：已出结果；p53：已出结果；POLE：未提供检测（not_tested）。"
       },
       "compare": {
@@ -312,7 +312,7 @@ window.DEMO_DATA = {
         ],
         "rows": [
           {
-            "ctx": "pMMR · IB 期 · 术后",
+            "ctx": "pMMR · IA2 期 · 术后",
             "guideline": "「对 IB 期且无其他高危因素者，辅助治疗方式（阴道近距离放疗或观察）需结合个体情况讨论。」",
             "china": "待核验（未取到 NMPA 官方原文）",
             "insurance": "待核验",
@@ -323,6 +323,22 @@ window.DEMO_DATA = {
             "ctx": "POLE 未检测",
             "guideline": "「POLE 超突变需经规范化检测确认；未检测不能推断为 POLE 超突变或非超突变。」",
             "china": "检测可及性因机构而异",
+            "insurance": "待核验",
+            "source": "ESGO/ESTRO/ESP 2021 · 分子分型章节",
+            "date": "2021"
+          },
+          {
+            "ctx": "p53abn（p53 突变型）",
+            "guideline": "「p53abn 型在 I–II 期亦属高危语境，辅助治疗讨论通常更积极；具体方案由治疗团队结合病理与个体情况决定。」",
+            "china": "待核验",
+            "insurance": "待核验",
+            "source": "ESGO/ESTRO/ESP 2021 · 分子分型章节（2025 版待核验）",
+            "date": "2021"
+          },
+          {
+            "ctx": "NSMP（p53 野生型，非 POLE/非 MMRd）",
+            "guideline": "「NSMP 为异质性最大的一型；辅助治疗决策依赖分级、肌层浸润、LVSI 等病理因素。」",
+            "china": "待核验",
             "insurance": "待核验",
             "source": "ESGO/ESTRO/ESP 2021 · 分子分型章节",
             "date": "2021"
@@ -1284,7 +1300,7 @@ window.DEMO_DATA = {
       "sex": "女",
       "diagnosis": "子宫内膜样腺癌 G1 · FIGO IA 期 · POLE 超突变（检出）· 保育治疗中（演示）",
       "diagnosisShort": "子宫内膜样 G1 · FIGO IA · POLE 超突变 · 保育中",
-      "stageLine": "FIGO 2023：IA 期（肌层浸润 <1/2）；分子：POLE 超突变（检出）· MMR：PMS2 缺失",
+      "stageLine": "FIGO 2023：IAmPOLEmut（肌层浸润 <1/2 + POLE 致病性变异）；MMR：PMS2 缺失（并列记录）",
       "primaryRole": "CAREGIVER",
       "caregiverLabel": "丈夫（主要代记人）",
       "headline": "31 岁，想先保住子宫：保育治疗第 8 个月，活检、孕激素与尝试怀孕都记在这。",

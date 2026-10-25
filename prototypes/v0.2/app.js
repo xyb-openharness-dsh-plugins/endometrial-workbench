@@ -351,7 +351,7 @@ function aiPromptWithCtx(key) {
     if (key.startsWith('stage/compare')) ctx.push('对照表只引用指南原文，不合成建议');
     if (key.startsWith('treatment')) ctx.push(`治疗阶段：${p.treatment.pathway.map((x) => `${x.phase} ${x.d}`).join('；')}；折叠卡五块齐全`);
     if (key.startsWith('fertility')) ctx.push(`保育：${p.fertility.applicable ? '在治疗中；零方案推荐/零概率预测' : '不适用'}`);
-    if (key.startsWith('lynch')) ctx.push(`Lynch：肿瘤 MMR 与胚系分开；家系 ${p.lynch.family.rows.length} 条（第三方 private）；尊重不知情权`);
+    if (key.startsWith('lynch')) ctx.push('Lynch：肿瘤 MMR 与胚系分开；家系记录为第三方私密（已按三出口过滤，不带条数与内容）；尊重不知情权');
     if (key.startsWith('intimate')) ctx.push('放疗后私密默认 private，三出口过滤；只记录医生给的频率');
     if (key.startsWith('followup')) ctx.push(`随访节点：${p.followup.nodes.slice(0, 3).join(' / ')}（起点 + k×间隔）；影像标有指征/常规`);
     if (key === 'chart') ctx.push('一图秀：各线按自身范围缩放，不可比；分类节点不连线');
@@ -1168,6 +1168,21 @@ function applyHash() {
   state.page = page;
   state.sub[page] = sub || (SUBPAGES[page] ? SUBPAGES[page][0][0] : '');
 }
+/* 打印展开：@media print 的 CSS 无法让 <details> 收起内容进入 printToPDF（content-visibility 仍 hidden）——
+   必须在 beforeprint 时把折叠卡设为 open，打印后恢复原状态（评审 P0-2，32 号模版修正）。 */
+(function printExpandFoldouts() {
+  let prior = null;
+  window.addEventListener('beforeprint', () => {
+    const folds = [...document.querySelectorAll('details.phase-fold')];
+    prior = folds.map((d) => d.open);
+    folds.forEach((d) => { d.open = true; });
+  });
+  window.addEventListener('afterprint', () => {
+    if (!prior) return;
+    document.querySelectorAll('details.phase-fold').forEach((d, i) => { d.open = Boolean(prior[i]); });
+    prior = null;
+  });
+})();
 window.addEventListener('hashchange', () => { applyHash(); render(); });
 
 applyHash();

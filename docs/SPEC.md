@@ -9,7 +9,7 @@
 家族标准；client 链路 cervical 底本；apiBase 定稿契约；**治疗线 32 号折叠卡**；README 33 号截图；MinerU 接入；AI 按钮一键携带；模型路由 GLM-5.3+Flash。
 
 ## 4. 功能范围（10 线 30 页签，family-landscape §6）
-F-DASH / **F-TYPE（我的分型与分期：分子/分期引用/对照表/出血日志）** / **F-FERT（保育治疗）** / **F-LYNCH（Lynch 与家系）** / F-TX（手术与治疗，32 折叠卡）/ F-FU（随访）/ F-CHART / F-LIFE（营养与生活）/ F-MIND（心理与身体意象，私密）/ F-DOCS（复诊与资料）/ F-SET。
+F-DASH（看板，0）/ **F-TYPE（我的分型与分期：分子/分期引用/对照表/出血日志，6）** / **F-FERT（保育治疗，3）** / **F-LYNCH（Lynch 与家系，3）** / F-TX（手术与治疗·32 折叠卡，4）/ F-FU（随访，3）/ F-CHART（一图秀，0）/ F-LIFE（营养与生活，3）/ F-MIND（心理与身体意象，4 含私密）/ **F-RAIPRIV（放疗后私密，独立，只私密段）** / F-DOCS（复诊与资料）/ F-SET。页面数以 family-landscape §6.2 为唯一权威。
 
 ## 7. 验收
 G1 → G2（四必查件+HVT X1–X4+窄宽+computed fill）→ G3 → V1 → V2/V3（先新建会话）。✅🔧⏳。
