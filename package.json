@@ -1,6 +1,6 @@
 {
   "name": "@xyb-community/endometrial-workbench",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "面向子宫内膜癌患者与照护者的本机病程资料、FIGO 2023 分子分型、Lynch 家系、保育治疗决策、出血日志与放疗后私密记录工作台",
   "private": true,
   "type": "module",

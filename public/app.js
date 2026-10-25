@@ -22,7 +22,7 @@
    无会话时外壳先调起再填，不自动发送。 */
 
 const APP_INFO = {
-  version: '0.3.0',
+  version: '0.3.1',
   build: '2026-10-25',
   channel: 'dsh',
   channelLabel: '开发版 · 已连接工作台数据',
@@ -71,7 +71,7 @@ const SUBPAGES = {
   fertility: [['decision', '保育决策档案'], ['progestin', '孕激素与监测'], ['conceive', '妊娠尝试与产后计划']],
   lynch: [['testing', 'MMR 与胚系检测'], ['family', '家系记录（第三方私密）'], ['comm', '告知与监测计划']],
   intimate: [['symptoms', '私密症状记录'], ['dilator', '扩张与保湿'], ['comm', '沟通与就诊准备']],
-  followup: [['calendar', '随访日历'], ['imaging', '影像与阴道细胞学'], ['comorb', '慢病与第二原发癌'], ['nutrition', '体重与营养']],
+  followup: [['calendar', '随访日历'], ['imaging', '影像与阴道细胞学'], ['labs', '化验与指标趋势'], ['lifestyle', '慢病与生活方式']],
   mind: [['feelings', '当下感受'], ['body', '身体意象与亲密'], ['fertility', '生育焦虑与家庭沟通']],
   docs: [['library', '资料库与导入'], ['candidates', '整理草稿与核对'], ['prepare', '就诊准备与导出'], ['trials', '试验线索']]
 };
@@ -915,7 +915,7 @@ function pageFuImaging() {
   <div class="section-title"><div><h2>阴道细胞学</h2><p>记录但标「非常规」。</p></div></div>
   ${f.cytology.length ? `<div class="card">${f.cytology.map((x) => `<div class="kv-list"><div class="kv"><span>${esc(x.d)}</span><b>${esc(x.result)}</b></div><div class="kv"><span>原因 / 口径</span><b>${esc(x.reason)}</b></div></div><p class="small-note" style="margin-top:6px">${esc(x.note)}</p>`).join('')}</div>` : `<div class="empty"><h3>本档案没有细胞学记录</h3><p>没有症状时常规做，证据并不支持；具体听医生。</p></div>`}`;
 }
-function pageFuComorb() {
+function pageFuLifestyle() {
   const p = profile();
   const c = p.followup.comorb;
   return `${head('慢病与第二原发癌', '血压/BMI/血糖/血脂/运动/吸烟/骨健康；第二原发癌筛查（乳腺/结直肠/皮肤/肺）；心血管是首位死因。')}
@@ -925,15 +925,10 @@ function pageFuComorb() {
     <div class="kv"><span>运动</span><b>${esc(c.exercise)}</b></div><div class="kv"><span>吸烟</span><b>${esc(c.smoking)}</b></div>
     <div class="kv"><span>骨健康</span><b>${esc(c.bone)}</b></div><div class="kv"><span>第二原发癌</span><b>${esc(c.secondPrimary)}</b></div>
   </div><p class="small-note" style="margin-top:9px">${esc(c.note)}</p></div>
+  <div class="section-title"><div><h2>体重与营养</h2><p>份量、食物、症状、体重趋势；体重进指标；不给食谱/热量处方；不做体重道德评判。</p></div></div>
+  ${p.followup.nutrition.rows.length ? `<div class="table-wrap"><table><thead><tr><th>日期</th><th>进食（自述）</th><th>症状</th><th>体重</th></tr></thead><tbody>${p.followup.nutrition.rows.map((x) => `<tr><td class="mono">${esc(x.d)}</td><td>${esc(x.meal)}</td><td>${esc(x.symptom)}</td><td class="mono">${x.weight ?? ''} kg</td></tr>`).join('')}</tbody></table></div><div class="scroll-hint">左右滑动查看表格</div>` : '<div class="empty"><h3>暂无营养记录</h3><p>体重与进食记录会出现在这里。</p></div>'}
+  <p class="small-note" style="margin-top:9px">${esc(p.followup.nutrition.note)}</p>
   <div class="notice plain" style="margin-top:12px">本页只记录数值与事实，不给处方、不做风险评分；是否用药、是否加查，听医生。</div>`;
-}
-function pageFuNutrition() {
-  const p = profile();
-  const n = p.followup.nutrition;
-  return `${head('体重与营养', '份量、食物、症状、体重趋势；体重进指标；不给食谱/热量处方；不做体重道德评判。', '<button class="primary" data-action="weight-add">＋ 记一次体重 / 进食</button>')}
-  <div class="card"><div class="card-head"><div><h2>最近体重</h2><p>${esc(n.weight)}</p></div>${pill('进一图秀', 'blue')}</div>
-    <div class="table-wrap"><table><thead><tr><th>日期</th><th>进食（自述）</th><th>症状</th><th>体重</th></tr></thead><tbody>${n.rows.map((x) => `<tr><td class="mono">${esc(x.d)}</td><td>${esc(x.meal)}</td><td>${esc(x.symptom)}</td><td class="mono">${x.weight} kg</td></tr>`).join('')}</tbody></table></div><div class="scroll-hint">左右滑动查看表格</div>
-    <p class="small-note" style="margin-top:9px">${esc(n.note)}</p></div>`;
 }
 
 /* =====================================================================
@@ -1254,7 +1249,7 @@ const RENDERERS = {
   'fertility/decision': pageFertDecision, 'fertility/progestin': pageFertProgestin, 'fertility/conceive': pageFertConceive,
   'lynch/testing': pageLynchTesting, 'lynch/family': pageLynchFamily, 'lynch/comm': pageLynchComm,
   'intimate/symptoms': pageIntimateSymptoms, 'intimate/dilator': pageIntimateDilator, 'intimate/comm': pageIntimateComm,
-  'followup/calendar': pageFuCalendar, 'followup/imaging': pageFuImaging, 'followup/comorb': pageFuComorb, 'followup/nutrition': pageFuNutrition,
+  'followup/calendar': pageFuCalendar, 'followup/imaging': pageFuImaging, 'followup/lifestyle': pageFuLifestyle,
   'chart/': pageChart,
   'mind/feelings': pageMindFeelings, 'mind/body': pageMindBody, 'mind/fertility': pageMindFertility,
   'docs/library': pageDocsLibrary, 'docs/candidates': pageDocsCandidates, 'docs/prepare': pageDocsPrepare, 'docs/trials': pageDocsTrials
