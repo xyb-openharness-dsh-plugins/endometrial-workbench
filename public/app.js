@@ -22,7 +22,7 @@
    无会话时外壳先调起再填，不自动发送。 */
 
 const APP_INFO = {
-  version: '0.3.1',
+  version: '0.3.2',
   build: '2026-10-25',
   channel: 'dsh',
   channelLabel: '开发版 · 已连接工作台数据',
