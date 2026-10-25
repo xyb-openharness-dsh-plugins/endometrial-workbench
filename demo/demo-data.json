@@ -1275,7 +1275,106 @@
             "note": "标题含 MSI 状态条件；入组资格由研究团队判断。",
             "nmpa": "待核验"
           }
-        ]
+        ],
+        "trialMatch": {
+          "inputs": [
+            {
+              "field": "MMR：完整（pMMR）",
+              "source": "病理 IHC 报告 · 2026-06-16"
+            },
+            {
+              "field": "p53：野生型",
+              "source": "病理 IHC 报告 · 2026-06-16"
+            },
+            {
+              "field": "POLE：未检测",
+              "source": "未检测不参与匹配（不是阴性）"
+            },
+            {
+              "field": "FIGO 2023：IA2 期",
+              "source": "分期档案 · 2026-06-16（医生记录原文）"
+            }
+          ],
+          "channels": [
+            {
+              "channel": "本地快照（research/endometrial-cancer）",
+              "state": "SUCCESS",
+              "count": 4,
+              "snapshotDate": "2026-10-25",
+              "note": "快照会过期；此后登记的研究不在其中"
+            },
+            {
+              "channel": "在线：CDE / CTV",
+              "state": "SUCCESS",
+              "note": "M4 采集已入库（111 条）"
+            },
+            {
+              "channel": "在线：ChiCTR / ICTRP",
+              "state": "FAILED",
+              "note": "两轮 FAILED，不计覆盖（无法判断有无相关研究）"
+            }
+          ],
+          "tiers": [
+            {
+              "tier": "structured",
+              "label": "结构化命中",
+              "items": [
+                {
+                  "id": "CTR20244095",
+                  "condText": "错配修复正常（pMMR）",
+                  "where": "登记标题",
+                  "fact": "pMMR（病理 IHC，2026-06-16）",
+                  "verdictNote": "文字重合，非资格判断"
+                },
+                {
+                  "id": "CTR20242153",
+                  "condText": "非 MSI-H 或非 dMMR",
+                  "where": "登记标题",
+                  "fact": "pMMR（非 dMMR）",
+                  "verdictNote": "文字重合，非资格判断"
+                }
+              ]
+            },
+            {
+              "tier": "text",
+              "label": "文本命中",
+              "items": [
+                {
+                  "id": "CTR20191858",
+                  "condText": "子宫内膜癌 / 复发或晚期",
+                  "where": "标题",
+                  "fact": "瘤种一致；分期为 IA2（早期）——期别语境不同，列出供核对"
+                },
+                {
+                  "id": "CTR20211275",
+                  "condText": "根治性手术后 / 辅助",
+                  "where": "标题",
+                  "fact": "已完成根治性手术（手术记录）"
+                }
+              ]
+            },
+            {
+              "tier": "broad",
+              "label": "宽口径命中（排最后，仅参考）",
+              "items": []
+            }
+          ],
+          "unmatchable": [
+            {
+              "condition": "ECOG 评分 ≤ 1",
+              "reason": "本地未建档 ECOG 评分"
+            },
+            {
+              "condition": "LVSI 状态条件",
+              "reason": "本地 LVSI 只在病理原文里，未按条件项结构化"
+            },
+            {
+              "condition": "器官功能阈值（肝肾血象）",
+              "reason": "本地未按入组阈值建档"
+            }
+          ],
+          "note": "分层只表示「建档字段与登记条件文字重合」，不是入组资格。能否参加由研究团队按全部入组/排除标准判断。"
+        }
       },
       "dashKeys": [
         "WEIGHT",
@@ -2488,7 +2587,99 @@
             "note": "标题含 MSI 状态条件；入组资格由研究团队判断。",
             "nmpa": "待核验"
           }
-        ]
+        ],
+        "trialMatch": {
+          "inputs": [
+            {
+              "field": "POLE：超突变（检出）",
+              "source": "肿瘤 NGS 报告 · 2026-06-10"
+            },
+            {
+              "field": "MMR：PMS2 缺失（MMRd）",
+              "source": "病理 IHC 报告 · 2026-06-10（与 POLEmut 并列，multiple classifier）"
+            },
+            {
+              "field": "FIGO 2023：IAmPOLEmut",
+              "source": "分期档案 · 2026-06-10（医生记录原文）"
+            }
+          ],
+          "channels": [
+            {
+              "channel": "本地快照（research/endometrial-cancer）",
+              "state": "SUCCESS",
+              "count": 4,
+              "snapshotDate": "2026-10-25",
+              "note": "快照会过期"
+            },
+            {
+              "channel": "在线：CDE / CTV",
+              "state": "SUCCESS",
+              "note": "M4 采集已入库"
+            },
+            {
+              "channel": "在线：ChiCTR / ICTRP",
+              "state": "FAILED",
+              "note": "不计覆盖"
+            }
+          ],
+          "tiers": [
+            {
+              "tier": "structured",
+              "label": "结构化命中",
+              "items": [
+                {
+                  "id": "CTR20244095",
+                  "condText": "错配修复正常（pMMR）",
+                  "where": "登记标题",
+                  "fact": "PMS2 缺失（MMRd，非 pMMR）",
+                  "verdictNote": "条件与本档相反——列出是为让你问医生，不是判断"
+                },
+                {
+                  "id": "CTR20242153",
+                  "condText": "非 MSI-H 或非 dMMR",
+                  "where": "登记标题",
+                  "fact": "PMS2 缺失（MMRd）",
+                  "verdictNote": "条件与本档相反——列出供核对"
+                }
+              ]
+            },
+            {
+              "tier": "text",
+              "label": "文本命中",
+              "items": [
+                {
+                  "id": "CTR20191858",
+                  "condText": "子宫内膜癌 / 复发或晚期",
+                  "where": "标题",
+                  "fact": "瘤种一致；本档为早期保育治疗中——期别语境不同"
+                }
+              ]
+            },
+            {
+              "tier": "broad",
+              "label": "宽口径命中（排最后，仅参考）",
+              "items": [
+                {
+                  "id": "—",
+                  "condText": "实体瘤（宽口径）",
+                  "where": "推断自检索词覆盖",
+                  "fact": "瘤种属实体瘤——宽口径不构成任何依据"
+                }
+              ]
+            }
+          ],
+          "unmatchable": [
+            {
+              "condition": "ECOG 评分 ≤ 1",
+              "reason": "本地未建档 ECOG 评分"
+            },
+            {
+              "condition": "保育治疗状态是否影响入组",
+              "reason": "登记条件未写保育语境，本地无法判断"
+            }
+          ],
+          "note": "POLEmut 与 MMRd 并存（multiple classifier）：不同研究按不同标志物设条件，本页只并列，不替你选。"
+        }
       },
       "dashKeys": [
         "WEIGHT",

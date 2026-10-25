@@ -902,10 +902,28 @@ function pageDocsPrepare() {
 }
 function pageDocsTrials() {
   const p = profile();
-  return `${head('试验线索', 'dostarlimab / 帕博利珠单抗 / 仑伐+帕博 / dMMR/MSI-H / POLEmut 降阶 / 保育治疗；线索不是推荐，不判入组资格。')}
-  <div class="notice warn"><b>登记状态，未核实。</b>${esc(DATA.meta.trialNote)}</div>
-  ${p.docs.trials.map((t) => `<div class="trial-card"><div class="card-head"><div><h2>${esc(t.title)}</h2><p>${esc(t.id)} · ${esc(t.phase)} · ${esc(t.topic)} · ${esc(t.source)}</p></div>${pill(t.status, 'yellow')}</div><p class="small-note">${esc(t.note)}</p><p class="small-note" style="margin-top:4px">NMPA 状态：${esc(t.nmpa)} · 是否适合参加由研究团队按入组标准判断。</p></div>`).join('')}
-  <div class="notice plain">没有可核实的研究库时不提供检索入口；本页条目来自 2026-10 登记快照，仅作线索。</div>`;
+  const m = p.docs?.trialMatch;
+  if (!m) return `${head('试验线索', '本档案未生成匹配结果。')}<div class="empty"><h3>没有匹配结果</h3><p>先在「我的分型与分期」补齐分子与病理字段，再回到本页检索。</p></div>`;
+  const tierCard = (t) => `<div class="card" style="margin-bottom:10px"><div class="card-head"><div><h2>${esc(t.label)}</h2><p>${t.tier === 'structured' ? '建档字段与登记条件明确实体重合' : t.tier === 'text' ? '关键词重合（瘤种/药物/分期/机制）' : '仅宽口径词重合'}</p></div>${pill(t.tier === 'structured' ? '结构化' : t.tier === 'text' ? '文本' : '宽口径', t.tier === 'structured' ? 'green' : t.tier === 'text' ? 'blue' : 'grey')}</div>
+    ${t.items.length ? t.items.map((x) => `<div class="pd-row" style="grid-template-columns:1fr;border-top:1px dotted #e8eff5;padding-top:6px"><div><b>${esc(x.id)}</b> <span class="small-note">· ${esc(x.where || '')}</span></div><div class="small-note">命中条件原文：「${esc(x.condText)}」 → 建档值：${esc(x.fact)}</div>${x.verdictNote ? `<div class="small-note">${esc(x.verdictNote)}</div>` : ''}</div>`).join('') : '<p class="small-note">本层无命中。</p>'}
+  </div>`;
+  return `${head('试验线索', '建档 → 检索 → 分层证据 → 候选线索；线索不是推荐，不判入组资格。')}
+  <div class="notice warn"><b>登记状态，未核实。</b>${esc(m.note)}</div>
+
+  <div class="section-title"><div><h2>① 建档：参与匹配的字段</h2><p>只有已确认入库的字段参与匹配；候选与「未检测」不参与。</p></div></div>
+  <div class="card">${m.inputs.map((x) => `<div class="pd-row"><em>${esc(x.field)}</em><span class="small-note">${esc(x.source)}</span></div>`).join('')}</div>
+
+  <div class="section-title"><div><h2>② 检索：双通道终态</h2><p>逐来源如实：FAILED 不等于「没有相关研究」。</p></div></div>
+  <div class="table-wrap"><table><thead><tr><th>通道</th><th>终态</th><th>快照/说明</th></tr></thead><tbody>
+    ${m.channels.map((c) => `<tr><td><b>${esc(c.channel)}</b></td><td>${pill(c.state, c.state === 'SUCCESS' ? 'green' : 'red')}</td><td class="small-note">${esc(c.snapshotDate ? '快照 ' + c.snapshotDate + '；' : '')}${esc(c.note || '')}${c.count != null ? '（' + c.count + ' 条）' : ''}</td></tr>`).join('')}
+  </tbody></table></div><div class="scroll-hint">左右滑动查看表格</div>
+
+  <div class="section-title"><div><h2>③ 分层线索（高 → 低）</h2><p>分层不是资格判断；每条都带命中证据与建档来源。</p></div></div>
+  ${m.tiers.map(tierCard).join('')}
+
+  <div class="section-title"><div><h2>④ 无法自动匹配</h2><p>本地没有对应结构化字段的条件，逐条列出——**不是「不适用」**。</p></div></div>
+  <div class="card">${m.unmatchable.map((x) => `<div class="pd-row"><em>${esc(x.condition)}</em><span class="small-note">${esc(x.reason)}</span></div>`).join('')}</div>
+  <p class="small-note" style="margin-top:8px">本页永不写「你不适合 / 你能入组」；缺字段判「无法自动匹配」。是否参加由研究团队按全部入组/排除标准判断。</p>`;
 }
 
 /* ---------------- 导出（三出口之一） ---------------- */
