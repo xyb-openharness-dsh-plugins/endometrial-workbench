@@ -271,3 +271,78 @@ node scripts/probe-responsive.mjs   # 90 views, overflow/vertical/clipped = 0
   4. 重出 `readme-molecular-0.2.0.png`（以及任何受 `diagnosisShort` 影响的截图）；
   5. 回写 `docs/32` §3.4/§5 与 `templates/TREATMENT-PATHWAY.md`：判据改为「打印媒体下 `.pd-block` 文本可提取」，并把 `probe:proto` 升级为 `Page.printToPDF` 文本断言。
 - 关闭以上 5 项后，可再次提交返工复审；在此之前 G2 走查会带着「打印件写 IB、分子页自称多重分类」两处医生一眼可见的错误。
+
+---
+
+# §复审2（第三次复审 · P0-1 关闭验证）
+
+## S0. 元信息
+
+| 项 | 内容 |
+| --- | --- |
+| 复审人 / 模型 | 独立评审员（GLM-5.3 / max），非本仓作者模型 |
+| 复审日期 | 2026-10-25 |
+| 代码基线 | HEAD `1d896ac`（返工 `a4a1089` / `cd4b0b8` / `1d896ac`） |
+| 复审范围 | 仅 P0-1 逐子项关闭验证 + 断言有效性（含变异测试）+ 截图目视 + 五处期别一致性；不重审 P0-2 与 P1 全量 |
+| 方法 | 源码读取 + 实测（断言脚本 4 组变异对照、全仓 grep、截图裁切目视、mtime/commit 追溯）；不采信提交说明 |
+| 声明 | 只追加记录，不删改前两轮正文；结论不代表发布授权 |
+
+**结论先行：P0-1 的医学数据与断言部分 CLOSED；产物层仍 OPEN（静态兜底 1 处 + canonical 看板截图 3 张 + 诊断字段无守卫）。总体判断：仍需返工（一次性小收口），G2 暂不可签。**
+
+---
+
+## S1. P0-1 逐子项关闭表
+
+| # | 子项 | 命令 / 证据 | 实测输出 | 判定 |
+| --- | --- | --- | --- | --- |
+| 1 | demo1 三段期别全为 IA2 | `node -e` 解析 `DEMO_DATA` 输出 `stage.versions` | `2026-05-27 IA（暂定，依据活检）` → `2026-06-16 IA2 期（解剖期）` → `2026-07-02 IA2（解剖期，分子未改变期别）`；anatomical 同步 `IA2 期（肌层浸润 <1/2）` | **CLOSED** |
+| 2 | 三个指定文件 `FIGO IB` 清零 | `grep -c "FIGO IB"` | `demo-data.js` 0 / `build-demo-data.mjs` 0 / `app.js` 0 | **CLOSED** |
+| 3 | `IB 期` 全仓残留 | `grep -rn "FIGO IB\|IB 期" .`（排除 `.git` 与本文件历史引文） | 唯一命中 `prototypes/v0.2/index.html:20`：`<span id="profile-meta">52 岁 · 子宫内膜样 G2 · FIGO IB</span>`；其余全部位于本文件前两轮正文（历史引文，应留） | **OPEN（残留 1 处静态兜底）** |
+| 4 | 档案级 `diagnosis/diagnosisShort` 同步 | 同一 dump | demo1：`diagnosis`=「子宫内膜样腺癌 G2 · FIGO IA2 期 · …」、`diagnosisShort`=「子宫内膜样 G2 · FIGO IA2 · 放疗后随访」；demo2：`stageLine`=「FIGO 2023：IAmPOLEmut（肌层浸润 <1/2 + POLE 致病性变异）…」 | **CLOSED（数据层）** |
+| 5 | 看板/导出/分期截图目视 | 裁切 `crop((260,180,1100,250))` 目视 + `git log --oneline -- <file>` | `readme-dashboard-0.2.0.png`(13:10) 与 `readme-export-private-0.2.0.png`(13:09) 均为 `IA2 期（肌层浸润 <1/2）`；`stage-figo-demo1.png` 三段 IA/IA2；`stage-figo-demo2.png` 为 `IAmPOLEmut`；**但 `docs/shots/dash-main-demo1.png`、`dash-agent-demo1.png` 仍渲染「FIGO 2023：IB 期（肌层浸润 <1/2）」，`dash-main-demo2.png` 仍渲染旧串「IA 期…POLE 超突变（检出）· MMR：PMS2 缺失」** | **OPEN（3 张 canonical 图未覆盖重出）** |
+| 6 | demo2 `stageLine` 与分期页一致 | dump `stage.versions` | `2026-06-10 finalLabel=IAmPOLEmut（医生记录，分子标签并列）`、`2026-08-12 IAmPOLEmut（维持）`，与 stageLine 同标签 | **CLOSED** |
+| 7 | demo2 `multiple` 如实写 multiple classifier | `demo-data.js:1519`；`build-demo-data.mjs:551` | 「POLEmut 与 MMRd（PMS2 缺失）并列：报告注明 multiple classifier；按 FIGO 2023 以 POLEmut 定最终标签（IAmPOLEmut）…」；marker=`POLE 超突变（检出）· PMS2 缺失 · p53 野生` | **CLOSED** |
+| 8 | demo1 `multiple` 不伪造 | `demo-data.js:301`；`build-demo-data.mjs:159` | 「本档案为单一分子语境：MMR 完整（pMMR）、p53 野生型、POLE 未检测；报告未注明 multiple classifier。POLE 未检测不等于非超突变…」；与 marker `pMMR / p53 野生 / POLE 未检测` 一致 | **CLOSED** |
+| 9 | 断言读对字段 + 单特征反例 | `cat scripts/check-stage-consistency.mjs` | `:37` 读 `p.molecular?.multiple`（不再读不存在的 `p.stage?.multiple`）；`:41-45` 单一特征反例（pMMR/p53 野生 + POLE 未检测 却写「POLEmut 与 MMRd 并列」即失败）；`:33` POLEmut→IAmPOLEmut 规则 | **CLOSED** |
+| 10 | 断言非空转（变异测试） | 复制后改 3 处，分别跑脚本取真实 exit code | A（demo2 文案贴回 demo1）→ `exit=1`「demo1: 单一特征档案却写「POLEmut 与 MMRd 并列」」；B（demo2 改回「不是多重分类」）→ `exit=1`「demo2: 含 ≥2 分子特征却写「不是多重分类」」；C（demo1 finalLabel `IA2`→`IA`）→ `exit=1`「anatomical「IA2」与 finalLabel「IA」期别不同源（2026-06-16）」 | **CLOSED（三条规则均真实触发）** |
+| 11 | 断言进 `check` 链 | `package.json:23`；`npm run check` | 链尾 `&& node scripts/check-stage-consistency.mjs`；实跑输出 `staticPass: true` / `errors: []` + `✓ 分期一致性断言通过（…）` | **CLOSED** |
+| 12 | 断言覆盖 `diagnosisShort/stageLine` | 变异 D：仅把 demo1 `diagnosisShort` 改回「FIGO IB」 | 脚本仍 `exit=0` 输出✓ → 上一轮实际外泄路径（header / 打印头 / AI 上下文）依旧无守卫（上一轮 R4 清单第 3 条只落实了字段路径与入链，未落实此项） | **OPEN（守卫缺口）** |
+
+---
+
+## S2. 残留与新问题
+
+| # | 级别 | 问题 | 落点 / 证据 |
+| --- | --- | --- | --- |
+| N-9 | **P1** | 64 张 canonical 页签截图里 3 张看板图未随数据重出：`dash-main-demo1.png`、`dash-agent-demo1.png` 仍显示 IB，`dash-main-demo2.png` 仍显示旧 `stageLine`。本轮返工把新图另存为 `fix3-dash-.png`/`final-dash-.png`/`rework-dash-.png`，未覆盖 canonical 文件名，故「重截看板」在交付集里不成立；提交 `1d896ac` 的「最终残留=0」与事实不符 | `git log --oneline -1 -- docs/shots/dash-main-demo1.png docs/shots/dash-agent-demo1.png docs/shots/dash-main-demo2.png` → 均停在 `fe46a57`（返工前）；`README.md:71` 以 `docs/shots/` 64 图作为自验证据 |
+| N-10 | **P1** | 静态 HTML 兜底仍写 `FIGO IB`：首屏 JS（`app.js:378` 覆写 `#profile-meta`）执行前侧栏会闪现旧期别，源码级 grep 亦非零，直接推翻「清零」结论 | `prototypes/v0.2/index.html:20` |
+| N-11 | **P1** | 断言不含 `diagnosisShort`/`stageLine` 与当前 `finalLabel` 的同源校验（变异 D 通过）。上一轮正是这两处带 IB 逃逸到打印件与 AI 上下文；修了字段路径却仍留同一逃逸口 | `scripts/check-stage-consistency.mjs`（全文 50 行，仅 4 条规则） |
+| N-12 | P2（N-8 残留） | demo2 当前解剖期写作裸「IA 期（肌层浸润 <1/2，MRI）」，而项目自有字典（`research-notes/medical-constraints.md:157`）规定「非侵袭性类型 + 肌层浸润 <50% = IA2」；demo1 同条件写 IA2 → 同页两档案口径不一致。断言用罗马数字比较（`IA` vs `IA`）无法发现 | `prototypes/v0.2/demo-data.js:1466`；`docs/shots/stage-figo-demo2.png` 目视 |
+| N-13 | P2（N-4 残留） | `readme-molecular-0.2.0.png` 仍为 09:51 旧图，文案「本档案不是多重分类（报告未注明 multiple classifier）」；当前数据为「本档案为单一分子语境…未注明 multiple classifier」。语义仍成立（demo1 确为单一特征），仅文案漂移，不构成医学矛盾 | `docs/screenshots/readme-molecular-0.2.0.png`；`demo-data.js:301` |
+
+---
+
+## S3. 五处期别一致性抽查
+
+| 落点 | demo1 | demo2 | 判定 |
+| --- | --- | --- | --- |
+| `diagnosisShort`（侧栏 / 档案切换 / AI 上下文） | `子宫内膜样 G2 · FIGO IA2 · 放疗后随访` | `子宫内膜样 G1 · FIGO IA · POLE 超突变 · 保育中` | demo1 一致；demo2 用解剖期 IA（见 N-12） |
+| `diagnosis`（打印头） | `…FIGO IA2 期…` | `…FIGO IA 期 · POLE 超突变（检出）…` | demo1 一致；demo2 同上 |
+| 对照表 `ctx` | 无期别断言（`POLE 未检测` / `pMMR · 复发/晚期` 等） | `POLEmut · IA 期（保育语境）` | 不再出现 IB 或「pMMR · IB 期」 |
+| `stageLine`（看板「当前阶段」） | `IA2 期（肌层浸润 <1/2）` | `IAmPOLEmut（肌层浸润 <1/2 + POLE 致病性变异）` | 一致（但 demo2 看板图为旧图，见 N-9） |
+| README | 无期别事实句（只写「FIGO 2023 版本链引用」） | 同左 | 不构成矛盾 |
+
+---
+
+## S4. 总体判断
+
+**仍需返工；G2 暂不可签（但已是一次小收口，不是重做）。**
+
+- **P0-1 的实质已修好**：demo1 全部期别事实（`diagnosis`/`diagnosisShort`/`stageLine`/版本链/导出预览）统一为 IA2；demo2 恢复为 `IAmPOLEmut` 且 `multiple` 如实并列；demo1 `multiple` 回到单一分子语境；断言脚本读对 `molecular.multiple`、含单特征反例、三条规则经变异测试全部真实触发、并已挂进 `npm run check`。上一轮的两个新增 P0（demo1 伪造 multiple、断言空转）均已消失。
+- **卡在产物层与守卫层（3 项）**：① `index.html:20` 仍是 IB（首屏 JS 前可闪现，且「残留=0」不成立）；② `docs/shots/` 3 张 canonical 看板图仍是返工前的 IB / 旧 stageLine（交付证据与数据相反）；③ 断言仍未覆盖 `diagnosisShort/stageLine`——上一轮实际逃逸口原样保留，变异 D 可复现通过。
+- **最小收口清单（预计一次提交即可签）**：
+  1. `prototypes/v0.2/index.html:20` → `FIGO IA2`；
+  2. 用现有渲染覆盖重出 `docs/shots/dash-main-demo1.png`、`dash-agent-demo1.png`、`dash-main-demo2.png`（`fix3-dash-.png` 已是正确 IA2 版本，可直接覆盖）；
+  3. 断言补两条：`diagnosisShort`/`stageLine` 与当前 `finalLabel` 同源（POLEmut ⇒ 含 `IAmPOLEmut`；解剖期罗马数字一致），以及字典级「肌层浸润 <1/2 ⇒ IA2，不得写 IA/IB」；
+  4. （P2，可同批）demo2 解剖期 `IA` → `IA2`；`readme-molecular-0.2.0.png` 文案同步。
+- 以上 4 项完成后可直接签 G2，无需再走完整三轮复审；未完成前，G2 走查的截图证据仍会把 IB 送到医生视野。

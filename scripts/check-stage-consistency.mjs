@@ -38,6 +38,17 @@ for (const p of DATA.profiles || []) {
   if (feats >= 2 && /不是多重分类/.test(multiple)) {
     errors.push(`${p.id}: 含 ≥2 分子特征却写「不是多重分类」`);
   }
+  // ⑤ 档案级展示字段不得残留旧期别（变异 D：只改 diagnosisShort 曾可逃逸）
+  const current = (st.versions || []).find((v) => v.current) || {};
+  const curRoman = (String(current.finalLabel || '').match(/\b(IV|III|II|I)(A2?|B|C|C2?)?\b/) || [])[0];
+  for (const [field, val] of [['diagnosis', p.diagnosis], ['diagnosisShort', p.diagnosisShort], ['stageLine', p.stageLine]]) {
+    const v = String(val || '');
+    const r = (v.match(/FIGO\s*(IV|III|II|I)(A2?|B|C|C2?)?/) || [])[1];
+    if (r && curRoman && !curRoman.startsWith(r) && !(r === 'I' && curRoman.startsWith('I'))) {
+      errors.push(`${p.id}: ${field} 期别「${r}」与当前 finalLabel「${curRoman}」不一致`);
+    }
+    if (/FIGO\s*IB/.test(v)) errors.push(`${p.id}: ${field} 残留旧期别 FIGO IB`);
+  }
   // ④ 单一特征档案不得出现「POLEmut 与 MMRd 并列」类文案
   const singleContext = /pMMR|p53\s*野生/i.test(marker) && /POLE.{0,8}未检测/i.test(marker);
   if (singleContext && /POLEmut\s*与\s*MMRd/.test(multiple)) {

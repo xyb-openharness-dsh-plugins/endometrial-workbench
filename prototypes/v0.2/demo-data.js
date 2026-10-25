@@ -1463,7 +1463,7 @@ window.DEMO_DATA = {
           },
           {
             "d": "2026-06-10",
-            "anatomical": "IA 期（肌层浸润 <1/2，MRI）",
+            "anatomical": "IA2 期（肌层浸润 <1/2，MRI）",
             "finalLabel": "IAmPOLEmut（医生记录，分子标签并列）",
             "marker": "POLE 超突变（检出）· PMS2 缺失 · p53 野生",
             "change": "none",

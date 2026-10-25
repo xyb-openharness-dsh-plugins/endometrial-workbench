@@ -535,7 +535,7 @@ const B = {
     note: 'FIGO 2023 把分子分型纳入分期标签。本页只记录「哪一次、依据什么、变了没有」，不自算、不判定；期别后面多出的「m」表示分子标签。',
     versions: [
       { d: '2026-05-08', anatomical: 'IA 期（活检后临床分期，保育评估中）', finalLabel: 'IA（暂定，依据活检 + MRI）', marker: '分子结果未出', change: 'unknown', basis: '宫腔镜活检病理 + 盆腔 MRI；医生记录「拟按保育路径评估」', current: false },
-      { d: '2026-06-10', anatomical: 'IA 期（肌层浸润 <1/2，MRI）', finalLabel: 'IAmPOLEmut（医生记录，分子标签并列）', marker: 'POLE 超突变（检出）· PMS2 缺失 · p53 野生', change: 'none', basis: '分子病理报告原文 + 医生记录「按 FIGO 2023 并列分子标签」', current: true },
+      { d: '2026-06-10', anatomical: 'IA2 期（肌层浸润 <1/2，MRI）', finalLabel: 'IAmPOLEmut（医生记录，分子标签并列）', marker: 'POLE 超突变（检出）· PMS2 缺失 · p53 野生', change: 'none', basis: '分子病理报告原文 + 医生记录「按 FIGO 2023 并列分子标签」', current: true },
       { d: '2026-08-12', anatomical: 'IA 期（保育随访中，未手术）', finalLabel: 'IAmPOLEmut（维持）', marker: 'POLE 超突变（检出）', change: 'none', basis: '随访活检未见明确残留肿瘤；医生记录「期别未变」', current: true }
     ],
     stageNote: '期别是否变化、依据哪一条，以医生记录为准；本页不写「升级/降级」。'
