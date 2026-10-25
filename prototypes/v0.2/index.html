@@ -6,6 +6,7 @@
 <title>小膜宝 EndoPal · 子宫内膜癌工作台原型 v0.2.0</title>
 <meta name="description" content="子宫内膜癌（ENDO）患者与照护者工作台交互原型。演示数据，全部为模拟资料；不构成诊疗建议。">
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="primer.css">
 </head>
 <body>
 <a class="skip" href="#main">跳到主要内容</a>
@@ -73,5 +74,35 @@ window.addEventListener('message', function (e) {
 });
 </script>
 <script src="demo-data.js"></script>
+<script src="primer-data.js"></script>
+<script src="primer.js"></script>
 <script src="app.js"></script>
+<script>
+/* 36 号：本页 app.js 在 hashchange 里重渲染 #main，render() 末尾 scrollTo(0,0)，
+   且这次重渲染可能落在 primer 还原滚动之后。这里记住点「?」时的位置，
+   在 popstate / hashchange 以及 #main 每次重渲染后补回滚动。不改 primer.js / app.js。 */
+(function () {
+  var y = null
+  var timer = null
+  var main = document.getElementById('main')
+  document.addEventListener('click', function (e) {
+    if (e.target.closest && e.target.closest('[data-primer-open]')) {
+      y = window.scrollY
+      clearTimeout(timer)
+      timer = setTimeout(function () { y = null }, 1500)
+    }
+  }, true)
+  function restore() { if (y !== null) window.scrollTo(0, y) }
+  if (main && window.MutationObserver) new MutationObserver(restore).observe(main, { childList: true })
+  window.addEventListener('popstate', function () {
+    requestAnimationFrame(restore)
+    setTimeout(restore, 60)
+    setTimeout(restore, 200)
+  })
+  window.addEventListener('hashchange', function () {
+    requestAnimationFrame(restore)
+    setTimeout(restore, 60)
+  })
+})()
+</script>
 </body></html>

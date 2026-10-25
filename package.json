@@ -43,6 +43,7 @@
     "start": "node --disable-warning=ExperimentalWarning scripts/dev-server.mjs",
     "dev": "node --disable-warning=ExperimentalWarning scripts/dev-server.mjs",
     "probe:proto": "node scripts/probe-proto.mjs",
+    "probe:primer": "node scripts/probe-disease-primer.mjs",
     "probe:resp": "node scripts/probe-responsive.mjs",
     "check:hvt": "node scripts/check-hvt.mjs",
     "probe:headless": "node --disable-warning=ExperimentalWarning scripts/probe-headless.mjs",
