@@ -3,14 +3,19 @@
  * 全部内容属第 ② 层（解释）：只写定义、文件、指南列举过的手段、已发生的变化。
  * 任何「你该怎么办」的判断都不在这里，固定出口是「这一句需要问你的医生」。
  *
- * 原件状态照实写：FIGO 2025 更新为开放获取全文（PMC），其余指南为付费/登录墙/仅摘要，
+ * 原件状态照实写：FIGO 2025 更新为开放获取全文（PMC12411821），其余指南为付费/登录墙/仅摘要，
  * 一律标「未取得原件」；NMPA 批件只有官方媒体与企业公告，NMPA 官网 412，批件号未核实。
+ *
+ * 链接口径（36 号 §2.5，2026-10-27）：
+ *   每条 https 链接都用 primer-backfill 的 verify-links.mjs 真浏览器验过 OK 才写入；
+ *   拿不到可验证页的行写 nolink:true + note，不编 URL。
+ *   - PMC 正文页对无头浏览器返回 203/空正文，故 FIGO 2025 指向 Europe PMC 全文 XML（同一 PMCID）。
  */
 window.DISEASE_PRIMER = {
   brand: '小膜宝 EndoPal',
   name: '子宫内膜癌',
   en: 'Endometrial Cancer',
-  updated: '2026-10-25',
+  updated: '2026-10-27',
   sections: [
     {
       id: 'definition',
@@ -24,9 +29,9 @@ window.DISEASE_PRIMER = {
         '本台只抄病理与分子报告的原文，不把「期别后面多了个 m」解释成严重或好转，也不自算期别。'
       ],
       sources: [
-        { org: 'FIGO', doc: 'Cancer of the corpus uteri: A 2025 update', version: '2025-09', original: true, page: '开放获取全文（PMC12411821）' },
-        { org: 'FIGO', doc: 'FIGO staging of endometrial cancer: 2023', version: '2023-08', original: false, page: '页码待核', note: '全文付费，摘要与公开综述核对' },
-        { org: 'WHO', doc: 'WHO 2020 形态学分类（据 FIGO 2025 更新转引）', version: '2020', original: false, page: '页码待核' }
+        { org: 'FIGO', doc: 'Cancer of the corpus uteri: A 2025 update', version: '2025-09', original: true, url: 'https://www.ebi.ac.uk/europepmc/webservices/rest/PMC12411821/fullTextXML', page: '开放获取全文（PMC12411821）', note: 'PMC 正文页对无头浏览器返回 203，链接指向 Europe PMC 全文' },
+        { org: 'FIGO', doc: 'FIGO staging of endometrial cancer: 2023', version: '2023-08', original: false, secondaryUrl: 'https://www.jcancer.org/v16p4400.htm', page: '页码待核', note: '全文付费，摘要与公开综述核对' },
+        { org: 'WHO', doc: 'WHO 2020 形态学分类（据 FIGO 2025 更新转引）', version: '2020', original: false, secondaryUrl: 'https://publications.iarc.who.int/Book-And-Report-Series/Who-Classification-Of-Tumours/Female-Genital-Tumours-2020', page: '页码待核' }
       ]
     },
     {
@@ -37,13 +42,13 @@ window.DISEASE_PRIMER = {
       table: {
         head: ['机构', '文件', '版本 / 年份', '原件', '本台的用途'],
         rows: [
-          ['FIGO', 'Cancer of the corpus uteri: A 2025 update', '2025-09（开放获取全文）', '已取得（PMC 开放全文）', '症状评估、分子分型与分期规则、治疗语境、随访'],
-          ['FIGO', 'FIGO staging of endometrial cancer: 2023', '2023-08', '未取得原件（全文付费，摘要与公开综述核对）', 'FIGO 2023 期别结构与 m 标签'],
-          ['NCCN', 'NCCN Guidelines for Patients: Uterine Cancer, 2026（基于 Uterine Neoplasms V2.2026）', '2025-11-14（患者版）', '未取得原件', '手术范围、辅助治疗选项、随访频率'],
-          ['ESGO / ESTRO / ESP', 'ESGO-ESTRO-ESP guidelines: update 2025', '2025-08', '未取得原件（仅摘要，全文付费）', '与 FIGO 2023 分期的衔接'],
-          ['国家卫生健康委', '子宫内膜癌诊疗指南（2022年版）', '2022-04', '未取得原件（官网 412，正文用转载件核对）', '国内口径；采用 FIGO 2009 分期'],
-          ['中华医学会妇科肿瘤学分会', '中国妇科肿瘤临床实践指南 2025——子宫内膜癌', '2025-09-20', '未取得原件（登录墙，仅概述）', '国内实践对照'],
-          ['WHO', 'WHO 2020 形态学分类', '2020', '未取得原件（据 FIGO 2025 转引）', '组织学类型命名口径']
+          ['FIGO', 'Cancer of the corpus uteri: A 2025 update', '2025-09（开放获取全文）', { text: '已取得（开放获取全文）', url: 'https://www.ebi.ac.uk/europepmc/webservices/rest/PMC12411821/fullTextXML' }, '症状评估、分子分型与分期规则、治疗语境、随访'],
+          ['FIGO', 'FIGO staging of endometrial cancer: 2023', '2023-08', { text: '未取得原件，据二次来源（公开综述）', url: 'https://www.jcancer.org/v16p4400.htm' }, 'FIGO 2023 期别结构与 m 标签'],
+          ['NCCN', 'NCCN Guidelines for Patients: Uterine Cancer, 2026（基于 Uterine Neoplasms V2.2026）', '2025-11-14（患者版）', { text: '未取得原件，据二次来源（NCCN 患者版页）', url: 'https://www.nccn.org/patientresources/patient-resources/guidelines-for-patients/guidelines-for-patients-details?patientGuidelineId=41' }, '手术范围、辅助治疗选项、随访频率'],
+          ['ESGO / ESTRO / ESP', 'ESGO-ESTRO-ESP guidelines: update 2025', '2025-08', { text: '未取得原件，据二次来源（ESGO 指南页）', url: 'https://www.esgo.org/guidelines/search-guidelines/endometrial/' }, '与 FIGO 2023 分期的衔接'],
+          ['国家卫生健康委', '子宫内膜癌诊疗指南（2022年版）', '2022-04', { text: '未取得原件', nolink: true, note: '卫健委官网旧链已 404、站内检索不可用；仅省卫健委 PDF 转载可下载，PDF 无法脚本验活' }, '国内口径；采用 FIGO 2009 分期'],
+          ['中华医学会妇科肿瘤学分会', '中国妇科肿瘤临床实践指南 2025——子宫内膜癌', '2025-09-20', { text: '未取得原件', nolink: true, note: '登录墙；检索未获公开可读页' }, '国内实践对照'],
+          ['WHO', 'WHO 2020 形态学分类', '2020', { text: '未取得原件，据二次来源（IARC 分卷页）', url: 'https://publications.iarc.who.int/Book-And-Report-Series/Who-Classification-Of-Tumours/Female-Genital-Tumours-2020' }, '组织学类型命名口径']
         ]
       },
       points: [
@@ -52,9 +57,9 @@ window.DISEASE_PRIMER = {
         '「指南推荐」「中国获批」「医保报销」是三件事：本台把它们分字段显示，不合成一句话。'
       ],
       sources: [
-        { org: 'FIGO', doc: 'Cancer of the corpus uteri: A 2025 update', version: '2025-09', original: true, page: '开放获取全文（PMC12411821）' },
-        { org: 'NCCN', doc: 'NCCN Guidelines for Patients: Uterine Cancer, 2026', version: '2025-11-14', original: false, page: '页码待核' },
-        { org: '国家卫生健康委', doc: '子宫内膜癌诊疗指南（2022年版）', version: '2022-04', original: false, page: '页码待核', note: '官网 412，正文用转载件核对' }
+        { org: 'FIGO', doc: 'Cancer of the corpus uteri: A 2025 update', version: '2025-09', original: true, url: 'https://www.ebi.ac.uk/europepmc/webservices/rest/PMC12411821/fullTextXML', page: '开放获取全文（PMC12411821）' },
+        { org: 'NCCN', doc: 'NCCN Guidelines for Patients: Uterine Cancer, 2026', version: '2025-11-14', original: false, secondaryUrl: 'https://www.nccn.org/patientresources/patient-resources/guidelines-for-patients/guidelines-for-patients-details?patientGuidelineId=41', page: '页码待核' },
+        { org: '国家卫生健康委', doc: '子宫内膜癌诊疗指南（2022年版）', version: '2022-04', original: false, nolink: true, page: '页码待核', note: '官网旧链 404、站内检索不可用；仅省卫健委 PDF 转载' }
       ]
     },
     {
@@ -100,9 +105,9 @@ window.DISEASE_PRIMER = {
         '以上是文献与指南里列出的手段，按病期与线序排列，不代表任何一项适合你。选哪一个，这一句需要问你的医生。'
       ],
       sources: [
-        { org: 'FIGO', doc: 'Cancer of the corpus uteri: A 2025 update', version: '2025-09', original: true, page: '开放获取全文（PMC12411821）' },
-        { org: 'NCCN', doc: 'NCCN Guidelines for Patients: Uterine Cancer, 2026', version: '2025-11-14', original: false, page: '页码待核' },
-        { org: '国家卫生健康委', doc: '子宫内膜癌诊疗指南（2022年版）', version: '2022-04', original: false, page: '页码待核' }
+        { org: 'FIGO', doc: 'Cancer of the corpus uteri: A 2025 update', version: '2025-09', original: true, url: 'https://www.ebi.ac.uk/europepmc/webservices/rest/PMC12411821/fullTextXML', page: '开放获取全文（PMC12411821）' },
+        { org: 'NCCN', doc: 'NCCN Guidelines for Patients: Uterine Cancer, 2026', version: '2025-11-14', original: false, secondaryUrl: 'https://www.nccn.org/patientresources/patient-resources/guidelines-for-patients/guidelines-for-patients-details?patientGuidelineId=41', page: '页码待核' },
+        { org: '国家卫生健康委', doc: '子宫内膜癌诊疗指南（2022年版）', version: '2022-04', original: false, nolink: true, page: '页码待核', note: '官网旧链 404；仅省卫健委 PDF 转载' }
       ]
     },
     {
@@ -118,10 +123,10 @@ window.DISEASE_PRIMER = {
         '截至 2026-10-25：本项目采集到子宫内膜癌 2026 年登记 chinadrugtrials（CDE）49 条、ClinicalTrials.gov 62 条；chictr_online / ictrp 六个仓库状态为 FAILED（未查过，不计覆盖），阶段分布本台尚未统计。'
       ],
       sources: [
-        { org: 'FIGO', doc: 'FIGO staging of endometrial cancer: 2023', version: '2023-08', original: false, page: '页码待核' },
-        { org: 'ESGO / ESTRO / ESP', doc: 'ESGO-ESTRO-ESP guidelines: update 2025', version: '2025-08', original: false, page: '仅摘要，页码待核' },
-        { org: '新华网 / 美通社', doc: '帕博利珠单抗在华获批原发晚期或复发性子宫内膜癌适应症', version: '2026-02-06 / 2026-02-07', original: false, page: '页码待核', note: 'NMPA 官网 412，批件号未核实' },
-        { org: 'chinadrugtrials（CDE）/ ClinicalTrials.gov', doc: '2026 年子宫内膜癌试验登记采集', version: '快照 2026-10-25', original: true, note: '一手登记数据，本项目自采' }
+        { org: 'FIGO', doc: 'FIGO staging of endometrial cancer: 2023', version: '2023-08', original: false, secondaryUrl: 'https://www.jcancer.org/v16p4400.htm', page: '页码待核', note: '全文付费，据公开综述核对' },
+        { org: 'ESGO / ESTRO / ESP', doc: 'ESGO-ESTRO-ESP guidelines: update 2025', version: '2025-08', original: false, secondaryUrl: 'https://www.esgo.org/guidelines/search-guidelines/endometrial/', page: '仅摘要，页码待核' },
+        { org: '新华网 / 美通社', doc: '帕博利珠单抗在华获批原发晚期或复发性子宫内膜癌适应症', version: '2026-02-06 / 2026-02-07', original: false, nolink: true, page: '页码待核', note: '报道页未取得可验证链接；NMPA 官网 412，批件号未核实' },
+        { org: 'chinadrugtrials（CDE）/ ClinicalTrials.gov', doc: '2026 年子宫内膜癌试验登记采集', version: '快照 2026-10-25', original: true, nolink: true, note: '一手登记数据，本项目自采；分散在多个登记库，无单一可点原件' }
       ]
     }
   ]

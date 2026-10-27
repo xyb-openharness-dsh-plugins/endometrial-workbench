@@ -22,7 +22,7 @@
    无会话时外壳先调起再填，不自动发送。 */
 
 const APP_INFO = {
-  version: '0.3.2',
+  version: '0.3.3',
   build: '2026-10-25',
   channel: 'dsh',
   channelLabel: '开发版 · 已连接工作台数据',
@@ -551,6 +551,45 @@ function agentResize(delta) {
 /* =====================================================================
    看板
    ===================================================================== */
+/* 36 号 §2.6 状态卡：大字天数由锚点日派生，不手填；无锚点显示「待初始化」并指向三步初始化。
+   锚点日 = 治疗路径里第一条带日期的记录（本台示例为手术日）。 */
+function dayMs(s) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(s || ''));
+  return m ? Date.UTC(+m[1], +m[2] - 1, +m[3]) : null;
+}
+function statusCard(p) {
+  const path = (p.treatment && p.treatment.pathway) || [];
+  const anchor = path.find((x) => dayMs(x.d));
+  const nodes = ((p.followup && p.followup.nodes) || []).map((d) => ({ d, t: dayMs(d) })).filter((x) => x.t !== null);
+  const asOf = dayMs(p.meta && p.meta.windowEnd);
+  const primerBtn = '<button class="soft" data-primer-open aria-haspopup="dialog" aria-controls="disease-primer" aria-label="疾病概要：定义、医学资料与指南情况、治疗全景、发展趋势">疾病概要：子宫内膜癌是什么？</button>';
+  if (!anchor || !asOf) {
+    return `<section class="status-card" aria-labelledby="status-card-eyebrow">
+    <p class="eyebrow" id="status-card-eyebrow">待初始化 · 状态卡还没有锚点日</p>
+    <b class="status-day">待初始化</b>
+    <p class="status-now">三步初始化：① 选资料目录 ② 录入病理与分子报告原文 ③ 填治疗路径的起点日期</p>
+    <div class="status-actions"><button class="primary" data-action="settings">开始三步初始化 →</button>${primerBtn}</div>
+  </section>`;
+  }
+  const anchorMs = dayMs(anchor.d);
+  const dayN = Math.max(0, Math.round((asOf - anchorMs) / 86400000));
+  const past = path.filter((x) => dayMs(x.d) !== null && dayMs(x.d) <= asOf);
+  const current = past.length ? past[past.length - 1] : path[0];
+  const isLast = current === path[path.length - 1];
+  const phaseText = String(current.phase || '').replace(/^[①②③④⑤⑥⑦⑧⑨⑩]\s*/, '');
+  const next = nodes.find((x) => x.t > asOf);
+  const nextText = next ? `下次：${next.d}（随访）` : '下次：记录内没有下一个节点';
+  const core = /随访/.test(phaseText)
+    ? { page: 'followup', sub: 'calendar', label: '看随访日历 →' }
+    : { page: 'treatment', sub: 'pathway', label: '看治疗路径（按阶段）→' };
+  return `<section class="status-card" aria-labelledby="status-card-eyebrow">
+    <p class="eyebrow" id="status-card-eyebrow">D+${dayN} 状态卡 · ${next ? `距下次随访 ${next.d}` : '记录内无下一节点'}</p>
+    <b class="status-day">第 ${dayN} 天</b>
+    <p class="status-now">当前阶段：${esc(current.phase || '未记录')} · ${isLast ? '进行中' : '已记录完成'} · ${esc(nextText)}</p>
+    <p class="status-anchor">锚点：${esc(anchor.d)}（${esc(anchor.phase || '起点')}）· 天数由锚点日派生，不手填</p>
+    <div class="status-actions"><button class="primary" data-action="go" data-page="${core.page}" data-sub="${core.sub}">${core.label}</button>${primerBtn}</div>
+  </section>`;
+}
 function pageDash() {
   const p = profile();
   const bleed = p.bleeding.rows;
@@ -575,6 +614,7 @@ function pageDash() {
   if (p.intimate.symptoms.length) condCards.push(`<button class="task-entry" data-action="go" data-page="intimate" data-sub="symptoms"><span class="entry-icon">◐</span><b>放疗后私密记录</b><span>${p.intimate.symptoms.length} 条 · private</span><span class="arrow">›</span></button>`);
   if (!p.meta.lynchScreened || p.lynch.family.rows.length) condCards.push(`<button class="task-entry" data-action="go" data-page="lynch" data-sub="testing"><span class="entry-icon">◇</span><b>Lynch 与家系</b><span>${p.lynch.testing.status}</span><span class="arrow">›</span></button>`);
   return `${head('看板', '把今天能做的一件事放在最前面；出血、分型、治疗与随访都从这里出发。')}
+  ${statusCard(p)}
   <div class="stage-strip"><span class="eyebrow">当前阶段</span><b>${esc(p.stageLine)}</b><small>只引用医生与病理原文 · 本台不自算</small></div>
   <div class="duo">
     <div class="duo-col"><span class="duo-tag"><i></i>本人入口 · ${esc(p.name)}</span><div class="task-grid">${patientTasks}</div></div>

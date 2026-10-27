@@ -2,6 +2,15 @@
 
 只增不删；每条写清"改了什么 + 为什么 + 用户可见结果"。版本号与 VERSION、package.json 三处必须一致。
 
+## 0.3.3 — 2026-10-27 · 36 号 v2 补齐（指南可点+状态卡）
+
+- 模式层同步 starter 最新 `disease-primer.js/.css`：原件列/来源行支持 `{text,url}`、`url`/`secondaryUrl` 可点链接，缺链接行显示红色「违反 36 号 §2.5」标记；排版按 §4.3（去掉 `68ch`、列表缩进移到 `li`、表格 `min-width:640px`）。
+- 指南链接：7 行表 + 13 条来源共 26 项断言。写入 5 个实测 `OK` 的 https 链接（Europe PMC 全文 XML / JCancer 公开综述 / NCCN 患者版页 / ESGO 指南页 / IARC 分卷页）；4 处无法取得可验证页，按 `nolink:true + note` 如实标注（国家卫健委 2022、中华医学会妇科肿瘤学分会 2025、NMPA 获批报道、自采登记快照）。不编 URL，不复制指南条文。
+- 看板首卡新增 §2.6 状态卡：`D+N` 卡头 / 锚点日派生「第 N 天」/ 现状行（阶段原文 + 状态 + 下次日期与事项）/ 出口按钮排（当前阶段核心页 + 「疾病概要：子宫内膜癌是什么？」）；无锚点时显示「待初始化」并指向三步初始化。原型与 public 同源。
+- 顶栏新增「?」入口（`data-primer-open`，版本 chip 左侧）；`public/` 补齐 primer 三件套并接入 `public/index.html`；`scripts/check-primer-links.mjs` 进 `npm run check`（链接断言 + public 同源 + index 引用）。
+- 探针升级到 starter 最新（含 P9 排版对齐）：原型页 10/10 PASS（1440/900/390 三档对齐；P1–P9 + E0）。
+- 用户可见结果：浮窗指南表每一行要么可点开原件/二次来源，要么明确写「未取得原件」并说明原因；看板首卡能直接回答「现在第几天、下次是什么时候」。
+
 ## 0.2.0 — 2026-10-25
 
 - M2 交付：`demo/build-demo-data.mjs` 唯一数据源（两档案 × 6 个月：周慧敏 52 女 / 李思 31 女），生成 `prototypes/v0.2/demo-data.js` 与 `demo/demo-data.json`。
